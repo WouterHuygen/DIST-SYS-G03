@@ -9,16 +9,15 @@ public class NamingController {
     private MapManager mapManager = new MapManager();
 
     NamingController(){
-        mapManager.addNode("Node1", "192.168.0.1");
-        mapManager.addNode("Node2", "192.168.0.2");
+        //TODO: dependency injection for MapManager?
     }
 
     @GetMapping("/resolve")
     public String ResolveNaming(@RequestParam(value = "filename") String filename)  {
-        return mapManager.findNodeIp(filename);
+        return mapManager.findNodeIp(filename); //TODO: map to JSON?
     }
 
-    @GetMapping("/map")
+    @GetMapping("/nodes")
     public HashMap<String, String> GetMap(){
         HashMap<String, String> map = mapManager.getMap();
         return map;
@@ -28,7 +27,7 @@ public class NamingController {
     public String AddNode(@RequestParam(value = "name") String nodeName, @RequestParam(value = "ip") String ipAddress){
         String ret;
         if (mapManager.addNode(nodeName, ipAddress)){
-            ret = "{\"status\": \"OK\"}";
+            ret = "{\"status\": \"OK\"}"; //TODO: actual JSON objects?
         }
         else {
             ret = "{\"status\": \"Node already exists\"}";

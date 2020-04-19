@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 public class MapManager {
-    final String filename = "map.json";
+    private final String filename = "map.json";
     private HashMap<String, String> map = new HashMap<>();
 
     MapManager() {
@@ -19,8 +19,7 @@ public class MapManager {
         String key = Integer.toString(calculateHash(node));
         if (map.containsKey(key)) return false;
         map.put(key, ipAddress);
-        saveMap();
-        return true;
+        return saveMap(); //TODO: enum for succes, key already exists, failed saving map?
     }
 
     boolean deleteNode(String node){
@@ -42,16 +41,16 @@ public class MapManager {
         return ((hash * hash) & (32768 - 1)); // & (32768 - 1) = performance % 32768
     }
 
-    public String findNodeIp(String filename) {
+    String findNodeIp(String filename) {
         return findNodeIp(calculateHash(filename));
     }
 
-    public String findNodeIp(int hash) {
+    String findNodeIp(int hash) {
         Set<String> keys = map.keySet();
         int highestKey = 0;
         int smallestDiffKey = 0;
         for (String key : keys) {
-            int keyHash = Integer.parseInt(key);
+            int keyHash = Integer.parseInt(key); //TODO: save names as keys and calculate hash here everytime?
             if (keyHash < hash && keyHash > smallestDiffKey)
                 smallestDiffKey = keyHash;
             if (keyHash > highestKey)
