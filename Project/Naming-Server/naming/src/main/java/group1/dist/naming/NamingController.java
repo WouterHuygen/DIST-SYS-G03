@@ -9,41 +9,45 @@ public class NamingController {
     private MapManager mapManager = new MapManager();
 
     NamingController(){
-        mapManager.addNode(new Node("node1", "10.0.3.15"));
-        mapManager.addNode(new Node("node2", "10.0.3.17"));
+        //mapManager.addNode(new Node("node1", "10.0.3.15"));
+        //mapManager.addNode(new Node("node2", "10.0.3.17"));
         //TODO: dependency injection for MapManager?
     }
 
     @GetMapping("/resolve")
-    public Node ResolveNaming(@RequestParam(value = "filename") String filename)  {
-        return mapManager.findNodeIp(filename); //TODO: map to JSON?
+    public StatusObject<Node> ResolveNaming(@RequestParam(value = "filename") String filename)  {
+        StatusObject<Node> result = new StatusObject<>(true, "IP found", mapManager.findNodeIp(filename));
+        return result; //TODO: map to JSON?
     }
 
     @GetMapping("/nodes")
-    public HashMap<String, Node> GetMap(){
-        HashMap<String, Node> map = mapManager.getMap();
-        return map;
+    public StatusObject<HashMap<String, Node>> GetMap(){
+        StatusObject<HashMap<String, Node>> result = new StatusObject<>(true, "Node collection", mapManager.getMap());
+        return result;
     }
 
     @PostMapping("/nodes")
-    public String AddNode(@RequestParam(value = "name") String nodeName, @RequestParam(value = "ip") String ipAddress){ //TODO: maybe json body?
-        String ret;
-        if (mapManager.addNode(new Node(nodeName, ipAddress))){
-            ret = "{\"status\": \"OK\"}"; //TODO: actual JSON objects?
+    public StatusObject<Node> AddNode(@RequestParam(value = "name") String nodeName, @RequestParam(value = "ip") String ipAddress){ //TODO: maybe json body?
+        Node node = new Node(nodeName, ipAddress);
+        boolean result = mapManager.addNode(node);
+        String status;
+        if (result){
+            status = "Node added to map";
         }
         else {
-            ret = "{\"status\": \"Node already exists\"}";
+            status = "Node Already exists";
         }
-        return ret;
+        return new StatusObject<Node>(result, status, node);
     }
 
     @DeleteMapping("/nodes")
-    public String removeNode(@RequestParam(value = "name") String nodeName){
-        String ret;
-        if (mapManager.deleteNode(nodeName))
-            ret = "{\"status\": \"Removed " + nodeName + "\"}";
+    public StatusObject<Node> RemoveNode(@RequestParam(value = "name") String nodeName){
+        String status;
+        Node node = mapManager.deleteNode(nodeName);
+        if (node != null)
+            status = "Removed Node";
         else
-            ret = "{\"status\": \"Node does not exist\"}";
-        return ret;
+            status = "Node does not exist";
+        return new StatusObject<Node>(node != null, status, node);
     }
 }

@@ -1,8 +1,10 @@
 package group1.dist.naming;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.print.DocFlavor;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Set;
@@ -22,13 +24,14 @@ public class MapManager {
         return saveMap(); //TODO: enum for succes, key already exists, failed saving map?
     }
 
-    boolean deleteNode(String nodeName){
+    Node deleteNode(String nodeName){
         String key = Integer.toString(calculateHash(nodeName));
         if (map.containsKey(key)){
+            Node node = map.get(key);
             map.remove(key);
-            return true;
+            return node;
         }
-        return false;
+        return null;
     }
 
     static int calculateHash(String name) {
@@ -67,7 +70,7 @@ public class MapManager {
         try {
             String jsonString = readFromFile();
             if (!jsonString.equals(""))
-                map = /*(HashMap<String, String>)*/ mapper.readValue(jsonString, map.getClass()); //TODO: maps to hasmap<string,string> => problem
+                map = mapper.readValue(jsonString, new TypeReference<HashMap<String, Node>>(){}); //TODO: maps to hasmap<string,string> => problem
             else map = new HashMap<>();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
