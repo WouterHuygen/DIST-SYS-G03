@@ -9,24 +9,26 @@ public class NamingController {
     private MapManager mapManager = new MapManager();
 
     NamingController(){
+        mapManager.addNode(new Node("node1", "10.0.3.15"));
+        mapManager.addNode(new Node("node2", "10.0.3.17"));
         //TODO: dependency injection for MapManager?
     }
 
     @GetMapping("/resolve")
-    public String ResolveNaming(@RequestParam(value = "filename") String filename)  {
+    public Node ResolveNaming(@RequestParam(value = "filename") String filename)  {
         return mapManager.findNodeIp(filename); //TODO: map to JSON?
     }
 
     @GetMapping("/nodes")
-    public HashMap<String, String> GetMap(){
-        HashMap<String, String> map = mapManager.getMap();
+    public HashMap<String, Node> GetMap(){
+        HashMap<String, Node> map = mapManager.getMap();
         return map;
     }
 
-    @PutMapping("/nodes")
-    public String AddNode(@RequestParam(value = "name") String nodeName, @RequestParam(value = "ip") String ipAddress){
+    @PostMapping("/nodes")
+    public String AddNode(@RequestParam(value = "name") String nodeName, @RequestParam(value = "ip") String ipAddress){ //TODO: maybe json body?
         String ret;
-        if (mapManager.addNode(nodeName, ipAddress)){
+        if (mapManager.addNode(new Node(nodeName, ipAddress))){
             ret = "{\"status\": \"OK\"}"; //TODO: actual JSON objects?
         }
         else {
