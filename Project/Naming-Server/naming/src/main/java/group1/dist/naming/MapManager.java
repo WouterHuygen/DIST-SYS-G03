@@ -26,7 +26,8 @@ public class MapManager {
         String key = Integer.toString(calculateHash(node));
         if (map.containsKey(key)){
             map.remove(key);
-            return true;
+
+            return saveMap();
         }
         return false;
     }
