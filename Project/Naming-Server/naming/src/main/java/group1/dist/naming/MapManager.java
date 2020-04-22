@@ -1,38 +1,42 @@
 package group1.dist.naming;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
+import javax.print.DocFlavor;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Set;
 
 public class MapManager {
     private final String filename = "map.json";
-    private HashMap<String, String> map = new HashMap<>();
+    ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+    private HashMap<String, Node> map = new HashMap<>();
 
     MapManager() {
         getMap();
     }
 
-    boolean addNode(String node, String ipAddress) {
-        String key = Integer.toString(calculateHash(node));
+    boolean addNode(Node node) {
+        String key = Integer.toString(node.getId());
         if (map.containsKey(key)) return false;
-        map.put(key, ipAddress);
+        map.put(key, node);
         return saveMap(); //TODO: enum for succes, key already exists, failed saving map?
     }
 
-    boolean deleteNode(String node){
-        String key = Integer.toString(calculateHash(node));
+    Node deleteNode(String nodeName){
+        String key = Integer.toString(calculateHash(nodeName));
         if (map.containsKey(key)){
+            Node node = map.get(key);
             map.remove(key);
-
-            return saveMap();
+            return node;
         }
-        return false;
+        return null;
     }
 
-    private int calculateHash(String name) {
+    static int calculateHash(String name) {
         /*int hash = name.hashCode() % 32768;
         int hash2 = name.hashCode() & (32768 - 1);
         int hash3 = hash*hash2;
@@ -42,11 +46,11 @@ public class MapManager {
         return ((hash * hash) & (32768 - 1)); // & (32768 - 1) = performance % 32768
     }
 
-    String findNodeIp(String filename) {
+    Node findNodeIp(String filename) {
         return findNodeIp(calculateHash(filename));
     }
 
-    String findNodeIp(int hash) {
+    Node findNodeIp(int hash) {
         Set<String> keys = map.keySet();
         int highestKey = 0;
         int smallestDiffKey = 0;
@@ -63,12 +67,11 @@ public class MapManager {
         return map.get(Integer.toString(smallestDiffKey));
     }
 
-    HashMap<String, String> getMap() {
-        ObjectMapper mapper = new ObjectMapper();
+    HashMap<String, Node> getMap() {
         try {
             String jsonString = readFromFile();
             if (!jsonString.equals(""))
-                map = (HashMap<String, String>) mapper.readValue(jsonString, map.getClass()); //TODO: maps to hasmap<string,string> => problem
+                map = mapper.readValue(jsonString, new TypeReference<HashMap<String, Node>>(){}); //TODO: maps to hasmap<string,string> => problem
             else map = new HashMap<>();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -78,7 +81,6 @@ public class MapManager {
     }
 
     private boolean saveMap(){
-        ObjectMapper mapper = new ObjectMapper();
         boolean success = true;
         try {
             String jsonMap = mapper.writeValueAsString(map);
@@ -108,7 +110,7 @@ public class MapManager {
         String output = "";
         File f = new File(filename);
         try (FileInputStream i = new FileInputStream(f)) {
-            byte[] byteOutput = new byte[100];
+            byte[] byteOutput = new byte[i.available() + 5];
             i.read(byteOutput);
             output = new String(byteOutput);
         }catch (FileNotFoundException ignored){
