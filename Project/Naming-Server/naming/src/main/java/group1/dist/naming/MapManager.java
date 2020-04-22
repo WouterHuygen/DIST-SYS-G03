@@ -3,6 +3,7 @@ package group1.dist.naming;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import javax.print.DocFlavor;
 import java.io.*;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 public class MapManager {
     private final String filename = "map.json";
+    ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
     private HashMap<String, Node> map = new HashMap<>();
 
     MapManager() {
@@ -66,7 +68,6 @@ public class MapManager {
     }
 
     HashMap<String, Node> getMap() {
-        ObjectMapper mapper = new ObjectMapper();
         try {
             String jsonString = readFromFile();
             if (!jsonString.equals(""))
@@ -80,7 +81,6 @@ public class MapManager {
     }
 
     private boolean saveMap(){
-        ObjectMapper mapper = new ObjectMapper();
         boolean success = true;
         try {
             String jsonMap = mapper.writeValueAsString(map);
