@@ -21,10 +21,10 @@ public class DiscoveryService {
         try (MulticastSocket multicastSocket = new MulticastSocket()){
             InetAddress group = InetAddress.getByName(MULTICAST_GROUP_ADDRESS);
             String nodeName = context.getBean(NodeInfo.class).getNodeName();
-            String msg = "Joining: " + nodeName + ", " + Arrays.toString(InetAddress.getLocalHost().getAddress());
+            String msg = "Joining: " + nodeName + ", " + InetAddress.getLocalHost().getHostAddress();
             DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.length(), group, MULTICAST_PORT);
             multicastSocket.send(packet);
-            System.out.println("Sent message: " + msg);
+            System.out.println("Sent message: \"" + msg + "\"");
             success = receiveAck();
         } catch (UnknownHostException uhe) {
             System.out.println("Unknown host 225.4.5.6");
@@ -66,23 +66,5 @@ public class DiscoveryService {
         return success;
     }
 
-    public void listen() {
-        System.out.println("Started Listener");
-        while (true) {
-            try (MulticastSocket listenSocket = new MulticastSocket(MULTICAST_PORT)){
-                InetAddress group = InetAddress.getByName(MULTICAST_GROUP_ADDRESS);
-                listenSocket.joinGroup(group);
-                System.out.println("Joined multicast group");
 
-                byte[] msg = new byte[MAX_MSG_LEN];
-                DatagramPacket packet = new DatagramPacket(msg, msg.length);
-                listenSocket.receive(packet);
-                System.out.println("\nReceived packet from: " + packet.getAddress());
-                System.out.println("\nMessage: " + Arrays.toString(packet.getData()) + "\n");
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

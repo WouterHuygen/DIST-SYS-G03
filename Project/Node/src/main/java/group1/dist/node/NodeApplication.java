@@ -38,7 +38,11 @@ public class NodeApplication {
         if (discoveryService().sendJoin()) {
             System.out.println("join sent successfully");
         }
+        else {
+            System.out.println("join failed");
+        }
         System.out.println("started listening");
-        discoveryService().listen();
+        UDPListenThread thread = new UDPListenThread();
+        thread.start();
     }
 }
