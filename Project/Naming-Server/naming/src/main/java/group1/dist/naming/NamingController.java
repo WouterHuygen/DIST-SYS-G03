@@ -1,12 +1,19 @@
 package group1.dist.naming;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 
 @RestController
 public class NamingController {
-    private MapManager mapManager = new MapManager();
+
+    @Autowired
+    private ApplicationContext context;
+
+    @Autowired
+    private MapManager mapManager; //TODO: test autowired
 
     NamingController(){
         //mapManager.addNode(new Node("node1", "10.0.3.15"));

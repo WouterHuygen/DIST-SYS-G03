@@ -67,7 +67,7 @@ public class MapManager {
         return map.get(Integer.toString(smallestDiffKey));
     }
 
-    HashMap<String, Node> getMap() {
+    HashMap<String, Node> getMap() { //TODO: not read everytime, only on startup
         try {
             String jsonString = readFromFile();
             if (!jsonString.equals(""))
