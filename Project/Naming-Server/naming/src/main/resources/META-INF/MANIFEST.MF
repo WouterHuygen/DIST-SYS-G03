@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Main-Class: group1.dist.naming.NamingApplication
+Class-Path: spring-boot-starter-tomcat-2.2.5.RELEASE.jar spring-boot-sta
+ rter-json-2.2.5.RELEASE.jar hamcrest-core-2.1.jar spring-core-5.2.4.REL
+ EASE.jar jackson-datatype-jsr310-2.10.2.jar junit-4.12.jar spring-boot-
+ autoconfigure-2.2.5.RELEASE.jar hibernate-validator-6.0.18.Final.jar sp
+ ring-jcl-5.2.4.RELEASE.jar hamcrest-2.1.jar tomcat-embed-el-9.0.31.jar 
+ spring-webmvc-5.2.4.RELEASE.jar snakeyaml-1.25.jar jackson-datatype-jdk
+ 8-2.10.2.jar spring-boot-starter-logging-2.2.5.RELEASE.jar spring-boot-
+ starter-validation-2.2.5.RELEASE.jar spring-boot-starter-2.2.5.RELEASE.
+ jar log4j-api-2.12.1.jar spring-web-5.2.4.RELEASE.jar spring-boot-2.2.5
+ .RELEASE.jar jboss-logging-3.4.1.Final.jar jakarta.annotation-api-1.3.5
+ .jar spring-boot-starter-web-2.2.5.RELEASE.jar jackson-annotations-2.10
+ .2.jar tomcat-embed-websocket-9.0.31.jar spring-expression-5.2.4.RELEAS
+ E.jar jackson-module-parameter-names-2.10.2.jar jackson-core-2.10.2.jar
+  jackson-databind-2.10.2.jar spring-beans-5.2.4.RELEASE.jar logback-cor
+ e-1.2.3.jar spring-context-5.2.4.RELEASE.jar classmate-1.5.1.jar jakart
+ a.validation-api-2.0.2.jar json-simple-1.1.1.jar slf4j-api-1.7.30.jar j
+ ul-to-slf4j-1.7.30.jar logback-classic-1.2.3.jar log4j-to-slf4j-2.12.1.
+ jar spring-aop-5.2.4.RELEASE.jar tomcat-embed-core-9.0.31.jar
+
