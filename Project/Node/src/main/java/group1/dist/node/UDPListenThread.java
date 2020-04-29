@@ -4,8 +4,10 @@ import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.nio.charset.StandardCharsets;
 
 import static group1.dist.node.DiscoveryService.*;
 
@@ -32,36 +34,46 @@ public class UDPListenThread extends Thread{
                 System.out.println("\nMessage: \"" + new String(packet.getData()) + "\"\n");
                 String hostname = new String(packet.getData());
                 hostname = hostname.substring(hostname.indexOf(",")+2);
-                System.out.println("hasing with: " + hostname);
-
-                int hashName = calculateHash(hostname);
+                System.out.println("hashing with: " + hostname);
                 listenSocket.close();
-                //sendAck(packet.getAddress());
                 checkIds(packet);
+            } catch (IOException e) {
+                System.out.println("MulticastSocket failed");
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
-    static int calculateHash(String name) {
-        int hash = (name.hashCode() & (32768 - 1));
-        return ((hash * hash) & (32768 - 1));
+    public void checkIds(DatagramPacket packet) {
+        NodeInfo nodeInfo = context.getBean(NodeInfo.class);
+        System.out.println(packet.getAddress().getHostAddress());
+        String nodeName = packet.getAddress().getHostAddress(); //TODO: extract name from packet
+        int hash = Node.calculateHash(nodeName);
+        System.out.println("calculating hashes");
+        System.out.println("current Id: " + nodeInfo.getSelf().getId());
+        System.out.println("hash Id: " + hash);
+        int currentId = nodeInfo.getSelf().getId();
+        Node node = new Node(nodeName, packet.getAddress().toString());
+        if (nodeInfo.getNextNode() == null | (currentId < hash && hash < nodeInfo.getNextNode().getId())) {
+            nodeInfo.setNextNode(node);
+            sendAck(nodeInfo.getSelf().getName(), packet.getAddress(), "previous");
+        } else if (nodeInfo.getPreviousNode() == null | (currentId > hash && hash > nodeInfo.getPreviousNode().getId())){
+            nodeInfo.setPreviousNode(node);
+            sendAck(nodeInfo.getSelf().getName(), packet.getAddress(), "next");
+        }
     }
 
-    public void checkIds(DatagramPacket packet) throws IOException {
-        System.out.println(packet.getAddress().getHostAddress());
-        int hash = calculateHash(packet.getAddress().getHostAddress());
-        currentId = calculateHash(InetAddress.getLocalHost().getHostName());
-        System.out.println("calculating hashes");
-        System.out.println("current Id: " + currentId);
-        System.out.println("hash Id: " + hash);
-        if ((currentId < hash && hash < nextNodeID) | nextNodeID == 0) {
-            nextNodeID = hash;
-            sendAck(packet.getAddress(), "previous");
-        } else if ((currentId > hash && hash > previousNodeID) | previousNodeID == 0){
-            previousNodeID = hash;
-            sendAck(packet.getAddress(), "next");
+    private void sendAck(String srcHostname, InetAddress destIp, String message) {
+        String response = "Response from: " + srcHostname + "\nMessage: " + message;
+        System.out.println("sending response: \"" + response + "\"");
+        try (DatagramSocket unicastSocket = new DatagramSocket(ACK_PORT)){
+            byte[] data = response.getBytes(StandardCharsets.UTF_8);
+            DatagramPacket packet = new DatagramPacket(data, data.length, destIp, ACK_PORT);
+            unicastSocket.send(packet);
+            System.out.println("response sent");
+        } catch (IOException e){
+            System.out.println("Unicast socket failed\nFailed to send ack");
+            e.printStackTrace();
         }
     }
 }

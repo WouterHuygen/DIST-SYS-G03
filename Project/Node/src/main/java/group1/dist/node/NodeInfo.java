@@ -1,41 +1,41 @@
 package group1.dist.node;
 
 public class NodeInfo {
-    private String nodeName;
-    private String previousNode;
-    private String nextNode;
+    private Node self;
+    private Node previousNode;
+    private Node nextNode;
 
-    public NodeInfo(String nodeName) {
-        this.nodeName = nodeName;
+    public NodeInfo(Node self) {
+        this.self = self;
     }
 
-    public NodeInfo(String nodeName, String previousNode, String nextNode) {
-        this.nodeName = nodeName;
+    public NodeInfo(Node self, Node previousNode, Node nextNode) {
+        this.self = self;
         this.previousNode = previousNode;
         this.nextNode = nextNode;
     }
 
-    public String getNodeName() {
-        return nodeName;
+    public Node getSelf() {
+        return self;
     }
 
-    public void setNodeName(String nodeName) {
-        this.nodeName = nodeName;
+    public void setSelf(Node self) {
+        this.self = self;
     }
 
-    public String getPreviousNode() {
+    public Node getPreviousNode() {
         return previousNode;
     }
 
-    public void setPreviousNode(String previousNode) {
+    public void setPreviousNode(Node previousNode) {
         this.previousNode = previousNode;
     }
 
-    public String getNextNode() {
+    public Node getNextNode() {
         return nextNode;
     }
 
-    public void setNextNode(String nextNode) {
+    public void setNextNode(Node nextNode) {
         this.nextNode = nextNode;
     }
 }

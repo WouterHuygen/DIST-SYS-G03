@@ -1,7 +1,6 @@
-package group1.dist.naming;
+package group1.dist.node;
 
-public class Node {
-    private int id;
+public class Node { private int id;
     private String name;
     private String ip;
 

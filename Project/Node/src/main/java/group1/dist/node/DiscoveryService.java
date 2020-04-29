@@ -5,7 +5,6 @@ import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
 import java.net.*;
-import java.util.Arrays;
 
 public class DiscoveryService {
     static final int MULTICAST_PORT = 3009;
@@ -20,7 +19,7 @@ public class DiscoveryService {
         boolean success = false;
         try (MulticastSocket multicastSocket = new MulticastSocket()){
             InetAddress group = InetAddress.getByName(MULTICAST_GROUP_ADDRESS);
-            String nodeName = context.getBean(NodeInfo.class).getNodeName();
+            String nodeName = context.getBean(NodeInfo.class).getSelf().getName();
             String msg = "Joining: " + nodeName + ", " + InetAddress.getLocalHost().getHostAddress();
             DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.length(), group, MULTICAST_PORT);
             multicastSocket.send(packet);

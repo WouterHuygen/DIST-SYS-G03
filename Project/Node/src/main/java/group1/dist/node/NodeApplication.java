@@ -7,6 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 @SpringBootApplication
 public class NodeApplication {
 
@@ -22,14 +25,22 @@ public class NodeApplication {
 
     @Bean
     public NodeInfo nodeInfo(){
+        String ip = null;
+        try {
+            ip = InetAddress.getLocalHost().getAddress().toString();
+        } catch (UnknownHostException e) {
+            System.out.println("Failed to obtain host ip address");
+            ip = "0.0.0.0";
+            e.printStackTrace();
+        }
         if (args.containsOption("name")){
             String name = args.getOptionValues("name").get(0);
             System.out.println("Creating nodeInfo object with name: " + name);
-            return new NodeInfo(name);
+            return new NodeInfo(new Node(name, ip));
         }
         String standardName = "StandardNodeName"; //TODO: standard node name
         System.out.println("Creating nodeInfo object with name: " + standardName);
-        return new NodeInfo(standardName);
+        return new NodeInfo(new Node(standardName, ip));
     }
 
     @Bean
