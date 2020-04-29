@@ -44,10 +44,15 @@ public class DiscoveryService {
                 try{
                     UDPSocket.setSoTimeout(1000);
                     UDPSocket.receive(received);
-                    System.out.println("Received: " + Arrays.toString(received.getData()));
-                    if (Arrays.toString(received.getData()).equals("ack")) { //TODO: depending on functionality
+                    String data = new String(received.getData());
+                    System.out.println("Received: " + data);
+                    data = data.toLowerCase();
+                    if (data.contains("response from")) { //TODO: depending on functionality
                         System.out.println("Received ACK");
                         success = true;
+                        if (data.contains("naming")){
+                            //TODO: logic
+                        }
                         break;
                     }
                 } catch (SocketTimeoutException sto){

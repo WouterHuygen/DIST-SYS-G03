@@ -13,15 +13,18 @@ import static group1.dist.naming.DiscoveryService.ACK_PORT;
 
 public class HandleJoinThread extends Thread {
 
-    @Autowired
+    private ApplicationContext context;
+
     private MapManager mapManager;
 
     private String nodeName;
     private InetAddress ipAddress;
 
-    public HandleJoinThread(String nodeName, InetAddress ipAddress) {
+    public HandleJoinThread(String nodeName, InetAddress ipAddress, ApplicationContext context) {
         this.nodeName = nodeName;
         this.ipAddress = ipAddress;
+        this.context = context;
+        mapManager = context.getBean(MapManager.class);
     }
 
     public void run() {

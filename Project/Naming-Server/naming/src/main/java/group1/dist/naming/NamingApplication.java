@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
@@ -11,6 +12,9 @@ public class NamingApplication {
 
     @Autowired
     private ApplicationArguments args;
+
+    @Autowired
+    private ApplicationContext context;
 
     public static void main(String[] args) {
         SpringApplication.run(NamingApplication.class, args);
@@ -40,14 +44,14 @@ public class NamingApplication {
 
     @Bean
     public void startDiscovery(){
-        if (discoveryService().sendJoin()) {
+        /*if (discoveryService().sendJoin()) {
             System.out.println("join sent successfully");
         }
         else {
             System.out.println("join failed");
-        }
+        }*/
         System.out.println("started listening");
-        UDPListenThread thread = new UDPListenThread();
+        UDPListenThread thread = new UDPListenThread(context);
         thread.start();
     }
 }
