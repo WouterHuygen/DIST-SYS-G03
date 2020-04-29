@@ -1,5 +1,7 @@
 package group1.dist.node;
 
+import org.springframework.context.ApplicationContext;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -8,6 +10,13 @@ import java.net.MulticastSocket;
 import static group1.dist.node.DiscoveryService.*;
 
 public class UDPListenThread extends Thread{
+
+    private ApplicationContext context;
+
+    public UDPListenThread(ApplicationContext context) {
+        this.context = context;
+    }
+
     public void run() {
         System.out.println("Started Listener");
         while (true) {

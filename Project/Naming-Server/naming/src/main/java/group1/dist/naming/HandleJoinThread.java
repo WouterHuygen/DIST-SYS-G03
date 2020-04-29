@@ -1,6 +1,5 @@
 package group1.dist.naming;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;

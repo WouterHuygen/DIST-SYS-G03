@@ -35,7 +35,7 @@ public class UDPListenThread extends Thread {
                 System.out.println("\nReceived packet from: " + packet.getAddress());
                 System.out.println("\nMessage: \"" + data + "\"\n");
                 if (data.contains("Joining")){
-                    HandleJoinThread handleJoinThread = new HandleJoinThread(data.substring(data.indexOf(':')+1, data.indexOf(',')), packet.getAddress(), context); // TODO: json
+                    HandleJoinThread handleJoinThread = new HandleJoinThread(data.substring(data.indexOf(':')+2, data.indexOf(',')), packet.getAddress(), context); // TODO: json
                     handleJoinThread.start();
                 }
             } catch (IOException e) {
