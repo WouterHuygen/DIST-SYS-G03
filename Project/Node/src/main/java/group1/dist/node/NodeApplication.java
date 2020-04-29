@@ -1,5 +1,6 @@
 package group1.dist.node;
 
+import group1.dist.node.Replication.APICall;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
@@ -59,5 +60,6 @@ public class NodeApplication {
         System.out.println("started listening");
         UDPListenThread thread = new UDPListenThread(context);
         thread.start();
+        APICall.Call("test.txt");
     }
 }
