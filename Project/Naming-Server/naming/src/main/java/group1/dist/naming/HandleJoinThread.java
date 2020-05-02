@@ -27,10 +27,10 @@ public class HandleJoinThread extends Thread {
     }
 
     public void run() {
-        int existingNodes = mapManager.getMap().size(); //TODO: error, nullpointer exception
+        int existingNodes = mapManager.getMap().size();
         if (mapManager.addNode(new Node(nodeName, ipAddress.toString()))) {
             System.out.println("Added node: " + nodeName); //TODO: node.toString()
-        }
+        } //TODO: handle existing node
         String response = "Response from: Naming Server\nExisting nodes: " + existingNodes;
         System.out.println("sending response: \"" + response + "\"");
         try (DatagramSocket unicastSocket = new DatagramSocket(ACK_PORT)){

@@ -50,13 +50,20 @@ public class DiscoveryService {
                         System.out.println("Received ACK");
                         success = true;
                         if (data.contains("naming")){
+                            System.out.println("Response from naming");
                             //TODO: logic
                         }
-                        break;
-                    }
+                        else if (data.contains("previous")){
+                            System.out.println("Response from previous");
+                            //TODO: logic
+                        }
+                        else if (data.contains("next")){
+                            System.out.println("Response from next");
+                            //TODO: logic
+                        }
+                    } //TODO: clear receivedMsg byte array?
                 } catch (SocketTimeoutException sto){
-                    System.out.println("Timeout for ack, no ack received");
-                    success = false;
+                    System.out.println("Timeout for ack, " + (success? "ack received" : "no ack received"));
                     break;
                 } catch (IOException e) {
                     e.printStackTrace();
