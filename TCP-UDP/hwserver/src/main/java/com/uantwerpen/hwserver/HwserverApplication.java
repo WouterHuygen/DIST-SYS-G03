@@ -31,7 +31,7 @@ public class HwserverApplication {
 				String response = "world";
 				socket.send(response.getBytes(ZMQ.CHARSET), 0);
 
-				Thread.sleep(1000); //  Do some 'work'
+				Thread.sleep(1000); //  Do some 'work
 			}
 		}
 	}
