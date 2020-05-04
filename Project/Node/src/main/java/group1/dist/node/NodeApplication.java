@@ -1,6 +1,9 @@
 package group1.dist.node;
 
 import group1.dist.node.Replication.APICall;
+import group1.dist.node.Replication.FileCheckThread;
+import group1.dist.node.Replication.FileTransferServer;
+import group1.dist.node.Replication.TCPListenerThread;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
@@ -22,6 +25,14 @@ public class NodeApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(NodeApplication.class, args);
+        //first replication when joining the network
+        startReplication();
+        //thread to check new files or file changes
+        Runnable fileChecker = new FileCheckThread("/home/pi/files", 10000);
+        new Thread(fileChecker).start();
+        //thread to check incoming TCP messages
+        Thread tcpThread = new Thread(new TCPListenerThread());
+        tcpThread.start();
     }
 
     @Bean
@@ -60,6 +71,18 @@ public class NodeApplication {
         System.out.println("started listening");
         UDPListenThread thread = new UDPListenThread(context);
         thread.start();
-        APICall.Call("test.txt");
+    }
+
+    private static void startReplication(){
+        String fileName = "test.txt";
+        String ip = APICall.Call(fileName);
+        if(ip != null){
+            try{
+                FileTransferServer.ServerRun(fileName, ip);
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+
+        }
     }
 }

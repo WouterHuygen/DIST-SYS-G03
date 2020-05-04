@@ -14,7 +14,8 @@ import java.util.HashMap;
 
 
 public class APICall {
-    public static void Call(String filename){
+    public static String Call(String filename){
+        String IP = null;
         try{
             //Call
             // TODO: get naming server ip from multicast message
@@ -45,8 +46,10 @@ public class APICall {
                     StatusObject<Node> statusObject = mapper.readValue(response.toString(), new TypeReference<StatusObject<Node>>(){});
 
                     if(statusObject.isSucces()){
+                        IP = statusObject.getBody().getIp();
                         System.out.println("Name: " + statusObject.getBody().getName());
-                        System.out.println("IP: " + statusObject.getBody().getIp());
+                        System.out.println("IP: " + IP);
+                        return IP;
                     }
                 } catch (Exception e){
                     e.printStackTrace();
@@ -60,5 +63,6 @@ public class APICall {
         } catch(Exception e){
             e.printStackTrace();
         }
+        return IP;
     }
 }

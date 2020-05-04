@@ -4,19 +4,37 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.List;
 
 public class FileTransferServer {
 
     public static void ServerRun(String filename, String IP) throws Exception {
 
+        NetworkInterface networkInterface = NetworkInterface.getByName("ethwe0");
+
         System.out.println("Server startup!");
         //Initialize Sockets
+
+
+        TCPMessage msg = new TCPMessage();
+        System.out.println("ip used for TCP: " + IP);
+        msg.startConnection(IP, 5556);
+        msg.sendMessage("replication " + networkInterface.getInetAddresses().nextElement().getHostAddress() + " " + filename);
+
         ServerSocket ssock = new ServerSocket(5000);
         Socket socket = ssock.accept();
 
-        if(socket.getInetAddress().toString().equals(IP)){
+
+        System.out.println("IP: " + IP);
+        System.out.println("host: " + socket.getInetAddress().getHostAddress());
+        System.out.println("NO host: " + socket.getInetAddress());
+
+        if(true){
             //Specify the file
             File file = new File("/home/pi/files/" + filename);
             FileInputStream fis = new FileInputStream(file);

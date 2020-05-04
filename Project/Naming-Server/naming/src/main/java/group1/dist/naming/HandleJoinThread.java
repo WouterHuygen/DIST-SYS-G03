@@ -28,7 +28,7 @@ public class HandleJoinThread extends Thread {
 
     public void run() {
         int existingNodes = mapManager.getMap().size();
-        if (mapManager.addNode(new Node(nodeName, ipAddress.toString()))) {
+        if (mapManager.addNode(new Node(nodeName, ipAddress.getHostAddress()))) {
             System.out.println("Added node: " + nodeName); //TODO: node.toString()
         } //TODO: handle existing node
         String response = "Response from: Naming Server\nExisting nodes: " + existingNodes;

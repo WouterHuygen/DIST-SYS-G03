@@ -54,28 +54,10 @@ public class UDPListenThread extends Thread{
         System.out.println("hash Id: " + hash);
         int currentId = nodeInfo.getSelf().getId();
         Node node = new Node(nodeName, packet.getAddress().toString());
-
-        boolean isNext = false;
-        if (nodeInfo.getNextNode() == null) {
-            isNext = true;
-        }
-        else if ((currentId < hash && hash < nodeInfo.getNextNode().getId())) {
-            isNext = true;
-        }
-        if (isNext) {
+        if (nodeInfo.getNextNode() == null || (currentId < hash && hash < nodeInfo.getNextNode().getId())) {
             nodeInfo.setNextNode(node);
             sendAck(nodeInfo.getSelf().getName(), packet.getAddress(), "previous");
-        }
-
-        boolean isPrevious = false;
-        if (nodeInfo.getPreviousNode() == null) {
-            isPrevious = true;
-        }
-        else if ((currentId > hash && hash > nodeInfo.getPreviousNode().getId())) {
-            isPrevious = true;
-        }
-
-        if (isPrevious){
+        } else if (nodeInfo.getPreviousNode() == null || (currentId > hash && hash > nodeInfo.getPreviousNode().getId())){
             nodeInfo.setPreviousNode(node);
             sendAck(nodeInfo.getSelf().getName(), packet.getAddress(), "next");
         }
