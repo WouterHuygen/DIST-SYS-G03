@@ -11,11 +11,11 @@ import java.nio.charset.StandardCharsets;
 
 import static group1.dist.node.DiscoveryService.*;
 
-public class UDPListenThread extends Thread{
+public class UDPListener implements Runnable {
 
     private ApplicationContext context;
 
-    public UDPListenThread(ApplicationContext context) {
+    public UDPListener(ApplicationContext context) {
         this.context = context;
     }
 

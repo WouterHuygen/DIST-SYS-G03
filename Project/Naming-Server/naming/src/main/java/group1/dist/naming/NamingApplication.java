@@ -44,14 +44,8 @@ public class NamingApplication {
 
     @Bean
     public void startDiscovery(){
-        /*if (discoveryService().sendJoin()) {
-            System.out.println("join sent successfully");
-        }
-        else {
-            System.out.println("join failed");
-        }*/
         System.out.println("started listening");
-        UDPListenThread thread = new UDPListenThread(context);
-        thread.start();
+        UDPListener listener = new UDPListener(context);
+        new Thread(listener).start();
     }
 }

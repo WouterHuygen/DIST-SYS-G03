@@ -39,7 +39,7 @@ public class NodeApplication {
     public NodeInfo nodeInfo(){
         String ip = null;
         try {
-            ip = InetAddress.getLocalHost().getAddress().toString();
+            ip = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
             System.out.println("Failed to obtain host ip address");
             ip = "0.0.0.0";
@@ -69,8 +69,8 @@ public class NodeApplication {
             System.out.println("join failed");
         }
         System.out.println("started listening");
-        UDPListenThread thread = new UDPListenThread(context);
-        thread.start();
+        UDPListener listener = new UDPListener(context);
+        new Thread(listener).start();
     }
 
     private static void startReplication(){
