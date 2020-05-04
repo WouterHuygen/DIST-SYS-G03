@@ -4,6 +4,8 @@ import group1.dist.node.Replication.APICall;
 import group1.dist.node.Replication.FileCheckThread;
 import group1.dist.node.Replication.FileTransferServer;
 import group1.dist.node.Replication.TCPListenerThread;
+import group1.dist.model.NodeInfo;
+import group1.dist.model.Node;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;

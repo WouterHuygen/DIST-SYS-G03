@@ -1,5 +1,7 @@
 package group1.dist.node;
 
+import group1.dist.model.Node;
+import group1.dist.model.NodeInfo;
 import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;

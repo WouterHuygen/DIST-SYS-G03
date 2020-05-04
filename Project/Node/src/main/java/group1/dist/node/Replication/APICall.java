@@ -2,8 +2,8 @@ package group1.dist.node.Replication;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group1.dist.node.Node;
-import group1.dist.node.StatusObject;
+import group1.dist.model.Node;
+import group1.dist.model.StatusObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

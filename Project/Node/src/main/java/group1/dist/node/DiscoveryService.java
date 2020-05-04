@@ -1,5 +1,6 @@
 package group1.dist.node;
 
+import group1.dist.model.NodeInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
