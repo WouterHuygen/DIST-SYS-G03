@@ -38,8 +38,6 @@ public class UDPListener implements Runnable{
                 System.out.println("\nMessage: \"" + data + "\"\n");
                 if (data.contains("Joining")){
                     handleJoin(data.substring(data.indexOf(':')+2, data.indexOf(',')), packet.getAddress());
-                    //HandleJoinThread handleJoinThread = new HandleJoinThread(data.substring(data.indexOf(':')+2, data.indexOf(',')), packet.getAddress(), context); // TODO: json
-                    //handleJoinThread.start();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -60,7 +58,7 @@ public class UDPListener implements Runnable{
                 do {
                     i++;
                     nodeName = nodeName + i;
-                } while (mapManager.addNode(new Node(nodeName, ipAddress.getHostAddress())));
+                } while (!mapManager.addNode(new Node(nodeName, ipAddress.getHostAddress())));
                 response += "\nNew name: " + nodeName;
             }
         }
