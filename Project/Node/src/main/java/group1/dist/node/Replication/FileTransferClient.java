@@ -18,7 +18,7 @@ public class FileTransferClient {
         byte[] contents = new byte[10000];
 
         //Initialize the FileOutputStream to the output file's full path.
-        FileOutputStream fos = new FileOutputStream("/home/pi/files/" + fileName);
+        FileOutputStream fos = new FileOutputStream("/home/pi/node/replicatedFiles/" + fileName);
         BufferedOutputStream bos = new BufferedOutputStream(fos);
         InputStream is = socket.getInputStream();
 

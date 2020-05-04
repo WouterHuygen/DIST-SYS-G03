@@ -25,18 +25,14 @@ public class FileTransferServer {
         System.out.println("ip used for TCP: " + IP);
         msg.startConnection(IP, 5556);
         msg.sendMessage("replication " + networkInterface.getInetAddresses().nextElement().getHostAddress() + " " + filename);
+        msg.stopConnection();
 
         ServerSocket ssock = new ServerSocket(5000);
         Socket socket = ssock.accept();
 
-
-        System.out.println("IP: " + IP);
-        System.out.println("host: " + socket.getInetAddress().getHostAddress());
-        System.out.println("NO host: " + socket.getInetAddress());
-
-        if(true){
+        if(IP.equals(socket.getInetAddress().getHostAddress())){
             //Specify the file
-            File file = new File("/home/pi/files/" + filename);
+            File file = new File("/home/pi/node/ownFiles/" + filename);
             FileInputStream fis = new FileInputStream(file);
             BufferedInputStream bis = new BufferedInputStream(fis);
 

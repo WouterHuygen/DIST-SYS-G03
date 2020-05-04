@@ -7,6 +7,8 @@ public class FileCheckThread implements Runnable {
 
     private long sleepDuration;
     private String path;
+    private static ArrayList<File> oldFileList = new ArrayList<File>();
+
     public FileCheckThread(String _path, long _sleepDuration){
         sleepDuration = _sleepDuration;
         path = _path;
@@ -15,16 +17,23 @@ public class FileCheckThread implements Runnable {
     @Override
     public void run() {
         ArrayList<File> newFileList;
-        int counter = 10;
+        ArrayList<File> deletedFileList;
 
-        while (counter-- > 0) {
+        while (true) {
             try {
                 newFileList = listLastModifiedFiles(new File(path), sleepDuration);
+                deletedFileList = listDeletedFiles(new File(path));
 
-                for (File File : newFileList)
-                    System.out.println(File.getName());
+                //print new files
+                for (File file : newFileList)
+                    System.out.println("New file: " + file.getName());
+
+                //print deleted files
+                for (File file: deletedFileList)
+                    System.out.println("Deleted file: " + file.getName());
 
                 Thread.sleep(sleepDuration);
+
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -39,6 +48,27 @@ public class FileCheckThread implements Runnable {
                 if ((System.currentTimeMillis() - fileEntry.lastModified()) <= sleepDuration)
                     newFileList.add(fileEntry);
         }
+
         return newFileList;
+    }
+
+    private static ArrayList<File> listDeletedFiles(File folder) throws Exception {
+
+        ArrayList<File> newFileList = new ArrayList<File>();
+        ArrayList<File> deletedFileList = new ArrayList<File>();
+
+        if(folder.listFiles() != null) {
+            for (File fileEntry : folder.listFiles()){
+                newFileList.add(fileEntry);
+            }
+        }
+
+        for(File fileEntry: oldFileList){
+            if(!newFileList.contains(fileEntry))
+                deletedFileList.add(fileEntry);
+        }
+        oldFileList = newFileList;
+
+        return deletedFileList;
     }
 }
