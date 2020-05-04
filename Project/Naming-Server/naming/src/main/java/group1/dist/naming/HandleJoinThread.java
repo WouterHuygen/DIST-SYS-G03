@@ -27,11 +27,21 @@ public class HandleJoinThread extends Thread {
     }
 
     public void run() {
-        int existingNodes = mapManager.getMap().size(); //TODO: error, nullpointer exception
-        if (mapManager.addNode(new Node(nodeName, ipAddress.toString()))) {
+        int existingNodes = mapManager.getMap().size();
+        String response = "Response from: Naming Server\nExisting nodes: " + existingNodes;
+        if (mapManager.addNode(new Node(nodeName, ipAddress.getHostAddress()))) {
             System.out.println("Added node: " + nodeName); //TODO: node.toString()
         }
-        String response = "Response from: Naming Server\nExisting nodes: " + existingNodes;
+        else {
+            if (!mapManager.getMap().get(Integer.toString(Node.calculateHash(nodeName))).getIp().equals(ipAddress.getHostAddress())) {
+                int i = 0;
+                do {
+                    i++;
+                    nodeName = nodeName + i;
+                } while (mapManager.addNode(new Node(nodeName, ipAddress.getHostAddress())));
+                response += "\nNew name: " + nodeName;
+            }
+        }
         System.out.println("sending response: \"" + response + "\"");
         try (DatagramSocket unicastSocket = new DatagramSocket(ACK_PORT)){
             byte[] data = response.getBytes(StandardCharsets.UTF_8);
