@@ -1,9 +1,8 @@
 package group1.dist.node;
 
-import group1.dist.node.Replication.APICall;
-import group1.dist.node.Replication.FileCheckThread;
-import group1.dist.node.Replication.FileTransferServer;
-import group1.dist.node.Replication.TCPListenerThread;
+import group1.dist.node.Replication.*;
+import javafx.application.Application;
+import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
@@ -13,6 +12,8 @@ import org.springframework.context.annotation.Bean;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -27,11 +28,6 @@ public class NodeApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(NodeApplication.class, args);
-        //first replication when joining the network
-        startReplication();
-        //thread to check new files or file changes
-        Runnable fileChecker = new FileCheckThread("/home/pi/node/ownFiles", 10000);
-        new Thread(fileChecker).start();
         //thread to check incoming TCP messages
         Thread tcpThread = new Thread(new TCPListenerThread());
         tcpThread.start();
@@ -41,11 +37,15 @@ public class NodeApplication {
     public NodeInfo nodeInfo(){
         String ip = null;
         try {
-            ip = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
+            NetworkInterface networkInterface = NetworkInterface.getByName("ethwe0");
+            if(networkInterface != null)
+                ip = networkInterface.getInetAddresses().nextElement().getHostAddress();
+            else
+                ip = "0.0.0.0";
+        } catch (Exception s){
             System.out.println("Failed to obtain host ip address");
             ip = "0.0.0.0";
-            e.printStackTrace();
+            s.printStackTrace();
         }
         if (args.containsOption("name")){
             String name = args.getOptionValues("name").get(0);
@@ -75,26 +75,21 @@ public class NodeApplication {
         new Thread(listener).start();
     }
 
-
-    private static void startReplication(){
-        ArrayList<File> newFileList = new ArrayList<File>();
+    @Bean
+    public void startReplication(){
+        FileReplicationHandler replicationHandler = new FileReplicationHandler(context);
         File folder = new File("/home/pi/node/ownFiles");
         if(folder.listFiles() != null) {
             for (File fileEntry : folder.listFiles()){
-                String ip = APICall.Call(fileEntry.getName());
-
-                //TODO: check on own ip
-
-
-                if(ip != null){
-                    try{
-                        FileTransferServer.ServerRun(fileEntry.getName(), ip);
-                    } catch(Exception e){
-                        e.printStackTrace();
-                    }
-
-                }
+                replicationHandler.ReplicateFile(fileEntry);
             }
         }
+    }
+
+    @Bean
+    public void startFileChecker(){
+        //thread to check new files or file changes
+        Runnable fileChecker = new FileCheckThread("/home/pi/node/ownFiles", 10000, context);
+        new Thread(fileChecker).start();
     }
 }

@@ -13,18 +13,17 @@ import java.util.List;
 
 public class FileTransferServer {
 
-    public static void ServerRun(String filename, String IP) throws Exception {
+    public void ServerRun(String filename, String IP) throws Exception {
 
         NetworkInterface networkInterface = NetworkInterface.getByName("ethwe0");
 
         System.out.println("Server startup!");
+
         //Initialize Sockets
-
-
         TCPMessage msg = new TCPMessage();
         System.out.println("ip used for TCP: " + IP);
         msg.startConnection(IP, 5556);
-        msg.sendMessage("replication " + networkInterface.getInetAddresses().nextElement().getHostAddress() + " " + filename);
+        msg.sendReplicationMessage(networkInterface.getInetAddresses().nextElement().getHostAddress(), filename);
         msg.stopConnection();
 
         ServerSocket ssock = new ServerSocket(5000);

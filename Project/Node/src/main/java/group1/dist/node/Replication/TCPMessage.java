@@ -40,4 +40,12 @@ public class TCPMessage {
             e.printStackTrace();
         }
     }
+
+    void sendReplicationMessage(String IP, String filename){
+        sendMessage("replication " + IP + " " + filename);
+    }
+
+    void sendDeleteMessage(String filename){
+        sendMessage("Delete " + filename);
+    }
 }
