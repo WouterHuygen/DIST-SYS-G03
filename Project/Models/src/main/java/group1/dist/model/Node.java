@@ -1,4 +1,4 @@
-package group1.dist.node;
+package group1.dist.model;
 
 public class Node {
     private int id;
@@ -14,7 +14,7 @@ public class Node {
         this.ip = ip;
     }
 
-    static int calculateHash(String name) {
+    public static int calculateHash(String name) {
         int hash = (name.hashCode() & (32768 - 1));
         return ((hash * hash) & (32768 - 1));
     }
