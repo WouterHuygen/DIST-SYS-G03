@@ -1,6 +1,7 @@
 package group1.dist.node;
 
-public class Node { private int id;
+public class Node {
+    private int id;
     private String name;
     private String ip;
 
@@ -37,5 +38,10 @@ public class Node { private int id;
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    @Override
+    public String toString() {
+        return "Node: " + name + "(" + id + ")" + "\n\tip: " + ip;
     }
 }
