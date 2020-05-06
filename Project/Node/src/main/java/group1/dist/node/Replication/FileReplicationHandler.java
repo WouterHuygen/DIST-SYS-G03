@@ -20,11 +20,15 @@ public class FileReplicationHandler {
         NodeInfo nodeInfo = context.getBean(NodeInfo.class);
         //TODO: check if there is a previous node
         if(ip != null){
-            if(ip.equals(nodeInfo.getSelf().getIp()))
+            if(ip.equals(nodeInfo.getSelf().getIp())){
                 System.out.println("OWN IP");
+                if(nodeInfo.getPreviousNode() != null)
+                    ip = nodeInfo.getPreviousNode().getIp();
+                System.out.println("New IP: " + ip);
+            }
             try{
                 FileTransferServer fileTransferServer = new FileTransferServer();
-                fileTransferServer.ServerRun(file.getName(), (ip.equals(nodeInfo.getSelf().getIp())) ? nodeInfo.getPreviousNode().getIp() : ip);
+                fileTransferServer.ServerRun(file.getName(), ip);
             } catch(Exception e){
                 e.printStackTrace();
             }
@@ -37,11 +41,16 @@ public class FileReplicationHandler {
         NodeInfo nodeInfo = context.getBean(NodeInfo.class);
         //TODO: check if there is a previous node
         if(ip != null){
-            if(ip.equals(nodeInfo.getSelf().getIp()))
+            if(ip.equals(nodeInfo.getSelf().getIp())){
                 System.out.println("OWN IP");
+
+                if(nodeInfo.getPreviousNode() != null)
+                    ip = nodeInfo.getPreviousNode().getIp();
+                System.out.println("New IP: " + ip);
+            }
             try{
                 System.out.println("ip used for TCP: " + ip);
-                tcpMessage.startConnection(((ip.equals(nodeInfo.getSelf().getIp())) ? nodeInfo.getPreviousNode().getIp() : ip), 5556);
+                tcpMessage.startConnection(ip, 5556);
                 tcpMessage.sendDeleteMessage(file.getName());
                 tcpMessage.stopConnection();
             } catch(Exception e){
