@@ -58,6 +58,7 @@ public class UDPListener implements Runnable {
             nodeInfo.setNextNode(node);
             sendAck(nodeInfo.getSelf().getName(), packet.getAddress(), "previous\nname: " + nodeInfo.getSelf().getName() + ";");
         } else if (nodeInfo.getPreviousNode() == null || (currentId > hash && hash > nodeInfo.getPreviousNode().getId())){
+            System.out.println(node.getName() + node.getIp() + " previous node");
             nodeInfo.setPreviousNode(node);
             sendAck(nodeInfo.getSelf().getName(), packet.getAddress(), "next\nname: " + nodeInfo.getSelf().getName() + ";");
         }
