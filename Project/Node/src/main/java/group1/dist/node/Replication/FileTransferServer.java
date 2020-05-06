@@ -13,7 +13,7 @@ import java.util.List;
 
 public class FileTransferServer {
 
-    public void ServerRun(String filename, String IP) throws Exception {
+    public void serverRun(String filename, String IP) throws Exception {
 
         NetworkInterface networkInterface = NetworkInterface.getByName("ethwe0");
 

@@ -14,8 +14,8 @@ public class FileReplicationHandler {
         tcpMessage = new TCPMessage();
     }
 
-    public void ReplicateFile(File file){
-        String ip = APICall.Call(file.getName());
+    public void replicateFile(File file){
+        String ip = APICall.call(file.getName());
 
         NodeInfo nodeInfo = context.getBean(NodeInfo.class);
         if(ip != null){
@@ -31,7 +31,7 @@ public class FileReplicationHandler {
             try{
                 if(!ip.equals("0")){
                     FileTransferServer fileTransferServer = new FileTransferServer();
-                    fileTransferServer.ServerRun(file.getName(), ip);
+                    fileTransferServer.serverRun(file.getName(), ip);
                 }
             } catch(Exception e){
                 e.printStackTrace();
@@ -39,8 +39,8 @@ public class FileReplicationHandler {
         }
     }
 
-    public void DeleteFile(File file){
-        String ip = APICall.Call(file.getName());
+    public void deleteFile(File file){
+        String ip = APICall.call(file.getName());
 
         NodeInfo nodeInfo = context.getBean(NodeInfo.class);
         if(ip != null){
@@ -66,6 +66,10 @@ public class FileReplicationHandler {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void shutDown(){
+
     }
 
 

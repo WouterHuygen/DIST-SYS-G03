@@ -33,7 +33,7 @@ public class TCPListenerThread implements Runnable {
                 stop();
                 //TODO: verplaatsen naar een aparte klasse ? Messagehandler ?
                 if (split_message[0].equals("replication")) {
-                    FileTransferClient.ClientRun(split_message[1], split_message[2]);
+                    FileTransferClient.clientRun(split_message[1], split_message[2]);
                 } else if (split_message[0].equals("delete")){
                     File file = new File("/home/pi/node/replicatedFiles/" + split_message[1]);
                     if(file.delete())

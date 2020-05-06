@@ -1,8 +1,6 @@
 package group1.dist.node;
 
 import group1.dist.node.Replication.*;
-import javafx.application.Application;
-import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
@@ -15,9 +13,7 @@ import java.io.IOException;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 
 @SpringBootApplication
 public class NodeApplication {
@@ -90,7 +86,7 @@ public class NodeApplication {
         File folder = new File("/home/pi/node/ownFiles");
         if(folder.listFiles() != null) {
             for (File fileEntry : folder.listFiles()){
-                replicationHandler.ReplicateFile(fileEntry);
+                replicationHandler.replicateFile(fileEntry);
             }
         }
     }
