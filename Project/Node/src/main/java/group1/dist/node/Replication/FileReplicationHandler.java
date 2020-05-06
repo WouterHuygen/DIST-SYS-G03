@@ -27,7 +27,6 @@ public class FileReplicationHandler {
                     System.out.println("No previous node, no replication needed");
                     ip = "0";
                 }
-                System.out.println("New IP: " + ip);
             }
             try{
                 if(!ip.equals("0")){
@@ -44,7 +43,6 @@ public class FileReplicationHandler {
         String ip = APICall.Call(file.getName());
 
         NodeInfo nodeInfo = context.getBean(NodeInfo.class);
-        //TODO: check if there is a previous node
         if(ip != null){
             if(ip.equals(nodeInfo.getSelf().getIp())){
                 System.out.println("OWN IP");
@@ -62,6 +60,7 @@ public class FileReplicationHandler {
                     tcpMessage.startConnection(ip, 5556);
                     tcpMessage.sendDeleteMessage(file.getName());
                     tcpMessage.stopConnection();
+                    System.out.println("Delete message sent!");
                 }
             } catch(Exception e){
                 e.printStackTrace();

@@ -7,13 +7,11 @@ import java.net.Socket;
 public class TCPListenerThread implements Runnable {
     private ServerSocket serverSocket;
     private Socket clientSocket;
-    //private PrintWriter out;
     private BufferedReader in;
 
     public void stop() {
         try {
             in.close();
-            //out.close();
             clientSocket.close();
             serverSocket.close();
         } catch (Exception e){
@@ -31,7 +29,7 @@ public class TCPListenerThread implements Runnable {
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String message = in.readLine();
                 String[] split_message = message.split(" ");
-                System.out.println(message);
+                System.out.println("Incoming TCP message: " + message);
                 stop();
                 //TODO: verplaatsen naar een aparte klasse ? Messagehandler ?
                 if (split_message[0].equals("replication")) {
@@ -39,7 +37,7 @@ public class TCPListenerThread implements Runnable {
                 } else if (split_message[0].equals("delete")){
                     File file = new File("/home/pi/node/replicatedFiles/" + split_message[1]);
                     if(file.delete())
-                        System.out.println(file.getName() + " is deleted.");
+                        System.out.println(file.getName() + " is deleted successfully.");
                     else
                         System.out.println("Failed to delete " + file.getName());
                 }
