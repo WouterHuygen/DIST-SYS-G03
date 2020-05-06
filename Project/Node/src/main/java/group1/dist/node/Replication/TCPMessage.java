@@ -46,6 +46,6 @@ public class TCPMessage {
     }
 
     void sendDeleteMessage(String filename){
-        sendMessage("Delete " + filename);
+        sendMessage("delete " + filename);
     }
 }

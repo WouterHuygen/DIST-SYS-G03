@@ -55,8 +55,14 @@ public class NodeApplication {
             System.out.println("Creating nodeInfo object with name: " + name);
             return new NodeInfo(new Node(name, ip));
         }
-        String standardName = "StandardNodeName"; //TODO: standard node name
-        System.out.println("Creating nodeInfo object with name: " + standardName);
+        String standardName; //TODO: standard node name
+        try {
+            standardName = InetAddress.getLocalHost().getHostName();
+            System.out.println("Creating nodeInfo object with name: " + standardName);
+        } catch (UnknownHostException e) {
+            standardName = "StandardNodeName";
+            e.printStackTrace();
+        }
         return new NodeInfo(new Node(standardName, ip));
     }
 
