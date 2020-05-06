@@ -48,18 +48,29 @@ public class DiscoveryService {
                     data = data.toLowerCase();
                     if (data.contains("response from")) { //TODO: depending on functionality
                         System.out.println("Received ACK");
+                        NodeInfo info = context.getBean(NodeInfo.class);
                         success = true;
                         if (data.contains("naming")){
                             System.out.println("Response from naming");
                             //TODO: logic
+                            if (data.contains("0")) {
+                                info.setNextNode(info.getSelf());
+                                System.out.println(info.getNextNode());
+                                info.setPreviousNode(info.getSelf());
+                                System.out.println(info.getPreviousNode());
+                            }
                         }
                         else if (data.contains("previous")){
                             System.out.println("Response from previous");
                             //TODO: logic
+                            info.setPreviousNode(new Node(data.substring(data.indexOf("name: ")+1, data.indexOf(";")), received.getAddress().getHostAddress()));
+                            System.out.println(info.getPreviousNode());
                         }
                         else if (data.contains("next")){
                             System.out.println("Response from next");
                             //TODO: logic
+                            info.setNextNode(new Node(data.substring(data.indexOf("name: ")+1, data.indexOf(";")), received.getAddress().getHostAddress()));
+                            System.out.println(info.getNextNode());
                         }
                     } //TODO: clear receivedMsg byte array?
                 } catch (SocketTimeoutException sto){
