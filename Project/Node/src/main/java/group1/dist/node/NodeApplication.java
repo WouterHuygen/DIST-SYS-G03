@@ -10,6 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import javax.annotation.PreDestroy;
+import java.io.IOException;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -33,6 +35,7 @@ public class NodeApplication {
         tcpThread.start();
     }
 
+
     @Bean
     public NodeInfo nodeInfo(){
         String ip = null;
@@ -52,8 +55,14 @@ public class NodeApplication {
             System.out.println("Creating nodeInfo object with name: " + name);
             return new NodeInfo(new Node(name, ip));
         }
-        String standardName = "StandardNodeName"; //TODO: standard node name
-        System.out.println("Creating nodeInfo object with name: " + standardName);
+        String standardName; //TODO: standard node name
+        try {
+            standardName = InetAddress.getLocalHost().getHostName();
+            System.out.println("Creating nodeInfo object with name: " + standardName);
+        } catch (UnknownHostException e) {
+            standardName = "StandardNodeName";
+            e.printStackTrace();
+        }
         return new NodeInfo(new Node(standardName, ip));
     }
 
@@ -83,6 +92,16 @@ public class NodeApplication {
             for (File fileEntry : folder.listFiles()){
                 replicationHandler.ReplicateFile(fileEntry);
             }
+        }
+    }
+
+    @PreDestroy
+    public void onExit(){
+        System.out.println("Starting shutdown procedure");
+        try {
+            discoveryService().shutdown(context.getBean(NodeInfo.class));
+        }catch (IOException e){
+            System.out.println(e);
         }
     }
 

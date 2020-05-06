@@ -3,6 +3,7 @@ package group1.dist.node;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
+import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.net.*;
 
@@ -32,6 +33,22 @@ public class DiscoveryService {
             e.printStackTrace();
         }
         return success;
+    }
+
+    public void shutdown(NodeInfo nodeInfo) throws IOException {
+        System.out.println("Removing " + nodeInfo.getSelf().getName() + "from nameserver mapping");
+        URL url = new URL("http://10.0.3.13:8080/nodes?name=" + nodeInfo.getSelf().getName());
+        HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+        httpCon.setRequestMethod("DELETE");
+        try {
+            Node previousNode = nodeInfo.getPreviousNode();
+            Node nextNode = nodeInfo.getNextNode();
+            System.out.println("My next node is: " + nextNode.getName() + " with IP: " + nextNode.getIp());
+            System.out.println("My previous node is: " + previousNode.getName() + " with IP: " + previousNode.getIp());
+        }catch (NullPointerException e){
+            System.out.println("No previous or Next node found");
+        }
+
     }
 
     private boolean receiveAck(){

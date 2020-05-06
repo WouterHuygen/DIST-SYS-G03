@@ -18,17 +18,22 @@ public class FileReplicationHandler {
         String ip = APICall.Call(file.getName());
 
         NodeInfo nodeInfo = context.getBean(NodeInfo.class);
-        //TODO: check if there is a previous node
         if(ip != null){
             if(ip.equals(nodeInfo.getSelf().getIp())){
                 System.out.println("OWN IP");
                 if(nodeInfo.getPreviousNode() != null)
                     ip = nodeInfo.getPreviousNode().getIp();
+                else{
+                    System.out.println("No previous node, no replication needed");
+                    ip = "0";
+                }
                 System.out.println("New IP: " + ip);
             }
             try{
-                FileTransferServer fileTransferServer = new FileTransferServer();
-                fileTransferServer.ServerRun(file.getName(), ip);
+                if(!ip.equals("0")){
+                    FileTransferServer fileTransferServer = new FileTransferServer();
+                    fileTransferServer.ServerRun(file.getName(), ip);
+                }
             } catch(Exception e){
                 e.printStackTrace();
             }
@@ -46,13 +51,18 @@ public class FileReplicationHandler {
 
                 if(nodeInfo.getPreviousNode() != null)
                     ip = nodeInfo.getPreviousNode().getIp();
-                System.out.println("New IP: " + ip);
+                else{
+                    System.out.println("No previous node, no need to delete replicated file");
+                    ip = "0";
+                }
             }
             try{
-                System.out.println("ip used for TCP: " + ip);
-                tcpMessage.startConnection(ip, 5556);
-                tcpMessage.sendDeleteMessage(file.getName());
-                tcpMessage.stopConnection();
+                if(!ip.equals("0")){
+                    System.out.println("ip used for TCP: " + ip);
+                    tcpMessage.startConnection(ip, 5556);
+                    tcpMessage.sendDeleteMessage(file.getName());
+                    tcpMessage.stopConnection();
+                }
             } catch(Exception e){
                 e.printStackTrace();
             }
