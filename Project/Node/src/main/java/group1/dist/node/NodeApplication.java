@@ -11,8 +11,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 @SpringBootApplication
 public class NodeApplication {
@@ -28,7 +30,7 @@ public class NodeApplication {
         //first replication when joining the network
         startReplication();
         //thread to check new files or file changes
-        Runnable fileChecker = new FileCheckThread("/home/pi/files", 10000);
+        Runnable fileChecker = new FileCheckThread("/home/pi/node/ownFiles", 10000);
         new Thread(fileChecker).start();
         //thread to check incoming TCP messages
         Thread tcpThread = new Thread(new TCPListenerThread());
@@ -73,16 +75,26 @@ public class NodeApplication {
         new Thread(listener).start();
     }
 
-    private static void startReplication(){
-        String fileName = "test.txt";
-        String ip = APICall.Call(fileName);
-        if(ip != null){
-            try{
-                FileTransferServer.ServerRun(fileName, ip);
-            } catch(Exception e){
-                e.printStackTrace();
-            }
 
+    private static void startReplication(){
+        ArrayList<File> newFileList = new ArrayList<File>();
+        File folder = new File("/home/pi/node/ownFiles");
+        if(folder.listFiles() != null) {
+            for (File fileEntry : folder.listFiles()){
+                String ip = APICall.Call(fileEntry.getName());
+
+                //TODO: check on own ip
+
+
+                if(ip != null){
+                    try{
+                        FileTransferServer.ServerRun(fileEntry.getName(), ip);
+                    } catch(Exception e){
+                        e.printStackTrace();
+                    }
+
+                }
+            }
         }
     }
 }
