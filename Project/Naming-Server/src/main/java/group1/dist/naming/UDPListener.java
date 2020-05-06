@@ -24,16 +24,11 @@ public class UDPListener implements Runnable{
             try (MulticastSocket listenSocket = new MulticastSocket(MULTICAST_PORT)) {
                 InetAddress group = InetAddress.getByName(MULTICAST_GROUP_ADDRESS);
                 listenSocket.joinGroup(group);
-                System.out.println("Joined multicast group");
 
                 byte[] msg = new byte[MAX_MSG_LEN];
-                System.out.println("made byte array");
                 DatagramPacket packet = new DatagramPacket(msg, msg.length);
-                System.out.println("made datagram packet");
                 listenSocket.receive(packet);
-                System.out.println("listened for packed");
                 String data = new String(packet.getData());
-                System.out.println("data: " + data);
                 System.out.println("\nReceived packet from: " + packet.getAddress());
                 System.out.println("\nMessage: \"" + data + "\"\n");
                 if (data.contains("Joining")){
@@ -60,6 +55,7 @@ public class UDPListener implements Runnable{
                     nodeName = nodeName + i;
                 } while (!mapManager.addNode(new Node(nodeName, ipAddress.getHostAddress())));
                 response += "\nNew name: " + nodeName;
+                System.out.println("Added node: " + nodeName); //TODO: node.toString()
             }
         }
         System.out.println("sending response: \"" + response + "\"");
