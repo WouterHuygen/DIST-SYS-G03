@@ -10,6 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import javax.annotation.PreDestroy;
+import java.io.IOException;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -32,6 +34,7 @@ public class NodeApplication {
         Thread tcpThread = new Thread(new TCPListenerThread());
         tcpThread.start();
     }
+
 
     @Bean
     public NodeInfo nodeInfo(){
@@ -83,6 +86,16 @@ public class NodeApplication {
             for (File fileEntry : folder.listFiles()){
                 replicationHandler.ReplicateFile(fileEntry);
             }
+        }
+    }
+
+    @PreDestroy
+    public void onExit(){
+        System.out.println("Starting shutdown procedure");
+        try {
+            discoveryService().shutdown(context.getBean(NodeInfo.class));
+        }catch (IOException e){
+            System.out.println(e);
         }
     }
 
