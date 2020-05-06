@@ -11,8 +11,6 @@ public class FileTransferClient {
 
     public static void ClientRun(String ip, String fileName) throws Exception {
         System.out.println("Client startup!");
-        System.out.println(ip);
-        System.out.println(InetAddress.getByName(ip));
         //Initialize socket
         Socket socket = new Socket(InetAddress.getByName(ip), 5000);
         byte[] contents = new byte[10000];
@@ -31,6 +29,6 @@ public class FileTransferClient {
         bos.flush();
         socket.close();
 
-        System.out.println("File saved successfully!");
+        System.out.println(fileName + " saved successfully!");
     }
 }
