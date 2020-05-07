@@ -27,18 +27,16 @@ public class UDPListener implements Runnable {
             try (MulticastSocket listenSocket = new MulticastSocket(MULTICAST_PORT)){
                 InetAddress group = InetAddress.getByName(MULTICAST_GROUP_ADDRESS);
                 listenSocket.joinGroup(group);
-                System.out.println("Joined multicast group");
 
                 byte[] msg = new byte[MAX_MSG_LEN];
                 DatagramPacket packet = new DatagramPacket(msg, msg.length);
                 listenSocket.receive(packet);
-                System.out.println("\nReceived packet from: " + packet.getAddress());
-                System.out.println("\nMessage: \"" + new String(packet.getData()) + "\"\n");
-                String hostname = new String(packet.getData());
-                hostname = hostname.substring(hostname.indexOf(",")+2);
-                System.out.println("hashing with: " + hostname);
-                listenSocket.close();
-                checkIds(packet);
+                String data = new String(packet.getData());
+                System.out.println("\nReceived packet from: " + packet.getAddress().getHostAddress());
+                System.out.println("\nMessage: \"" + data + "\"\n");
+                if (data.contains("Joining")){
+                    handleJoin(data.substring(data.indexOf(':')+2, data.indexOf(',')), packet.getAddress());
+                }
             } catch (IOException e) {
                 System.out.println("MulticastSocket failed");
                 e.printStackTrace();
@@ -46,22 +44,32 @@ public class UDPListener implements Runnable {
         }
     }
 
-    public void checkIds(DatagramPacket packet) {
+    public void handleJoin(String nodeName, InetAddress ipAddress) {
         NodeInfo nodeInfo = context.getBean(NodeInfo.class);
-        System.out.println(packet.getAddress().getHostAddress());
-        String nodeName = packet.getAddress().getHostAddress(); //TODO: extract name from packet
+        System.out.println(ipAddress.getHostAddress());
         int hash = Node.calculateHash(nodeName);
         System.out.println("calculating hashes");
         System.out.println("current Id: " + nodeInfo.getSelf().getId());
         System.out.println("hash Id: " + hash);
         int currentId = nodeInfo.getSelf().getId();
-        Node node = new Node(nodeName, packet.getAddress().toString());
-        if (nodeInfo.getNextNode() == null || (currentId < hash && hash < nodeInfo.getNextNode().getId())) {
+        Node node = new Node(nodeName, ipAddress.getHostAddress());
+        if (nodeInfo.getNextNode() == nodeInfo.getSelf() && nodeInfo.getPreviousNode() == nodeInfo.getSelf()) {
             nodeInfo.setNextNode(node);
-            sendAck(nodeInfo.getSelf().getName(), packet.getAddress(), "previous");
-        } else if (nodeInfo.getPreviousNode() == null || (currentId > hash && hash > nodeInfo.getPreviousNode().getId())){
+            System.out.println(nodeInfo.getNextNode());
+            sendAck(nodeInfo.getSelf().getName(), ipAddress, "previous\nname: " + nodeInfo.getSelf().getName() + ";");
             nodeInfo.setPreviousNode(node);
-            sendAck(nodeInfo.getSelf().getName(), packet.getAddress(), "next");
+            System.out.println(nodeInfo.getPreviousNode());
+            sendAck(nodeInfo.getSelf().getName(), ipAddress, "next\nname: " + nodeInfo.getSelf().getName() + ";");
+        }
+        else if (nodeInfo.getNextNode() == null || nodeInfo.getNextNode() == nodeInfo.getSelf() || (currentId < hash && hash < nodeInfo.getNextNode().getId())) {
+            nodeInfo.setNextNode(node);
+            System.out.println(nodeInfo.getNextNode());
+            sendAck(nodeInfo.getSelf().getName(), ipAddress, "previous\nname: " + nodeInfo.getSelf().getName() + ";");
+        }
+        else if (nodeInfo.getPreviousNode() == null || nodeInfo.getPreviousNode() == nodeInfo.getSelf() || (currentId > hash && hash > nodeInfo.getPreviousNode().getId())){
+            nodeInfo.setPreviousNode(node);
+            System.out.println(nodeInfo.getPreviousNode());
+            sendAck(nodeInfo.getSelf().getName(), ipAddress, "next\nname: " + nodeInfo.getSelf().getName() + ";");
         }
     }
 

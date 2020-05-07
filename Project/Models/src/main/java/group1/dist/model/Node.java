@@ -39,4 +39,9 @@ public class Node {
     public void setIp(String ip) {
         this.ip = ip;
     }
+
+    @Override
+    public String toString() {
+        return "Node: " + name + "(" + id + ")" + "\n\tip: " + ip;
+    }
 }
