@@ -1,10 +1,10 @@
 package group1.dist.node;
 
 import group1.dist.model.NodeInfo;
+import group1.dist.model.Node;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.net.*;
 

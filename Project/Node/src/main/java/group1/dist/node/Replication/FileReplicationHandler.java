@@ -1,7 +1,7 @@
 package group1.dist.node.Replication;
 
 
-import group1.dist.node.NodeInfo;
+import group1.dist.model.NodeInfo;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;

@@ -17,9 +17,7 @@ import java.io.IOException;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 
 @SpringBootApplication
 public class NodeApplication {
