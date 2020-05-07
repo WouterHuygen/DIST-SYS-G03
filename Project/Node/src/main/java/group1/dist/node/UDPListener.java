@@ -51,11 +51,20 @@ public class UDPListener implements Runnable {
         System.out.println("hash Id: " + hash);
         int currentId = nodeInfo.getSelf().getId();
         Node node = new Node(nodeName, ipAddress.getHostAddress());
-        if (nodeInfo.getNextNode() == null || nodeInfo.getNextNode() == nodeInfo.getSelf() || (currentId < hash && hash < nodeInfo.getNextNode().getId())) {
+        if (nodeInfo.getNextNode() == nodeInfo.getSelf() && nodeInfo.getPreviousNode() == nodeInfo.getSelf()) {
             nodeInfo.setNextNode(node);
             System.out.println(nodeInfo.getNextNode());
             sendAck(nodeInfo.getSelf().getName(), ipAddress, "previous\nname: " + nodeInfo.getSelf().getName() + ";");
-        } else if (nodeInfo.getPreviousNode() == null || nodeInfo.getPreviousNode() == nodeInfo.getSelf() || (currentId > hash && hash > nodeInfo.getPreviousNode().getId())){
+            nodeInfo.setPreviousNode(node);
+            System.out.println(nodeInfo.getPreviousNode());
+            sendAck(nodeInfo.getSelf().getName(), ipAddress, "next\nname: " + nodeInfo.getSelf().getName() + ";");
+        }
+        else if (nodeInfo.getNextNode() == null || nodeInfo.getNextNode() == nodeInfo.getSelf() || (currentId < hash && hash < nodeInfo.getNextNode().getId())) {
+            nodeInfo.setNextNode(node);
+            System.out.println(nodeInfo.getNextNode());
+            sendAck(nodeInfo.getSelf().getName(), ipAddress, "previous\nname: " + nodeInfo.getSelf().getName() + ";");
+        }
+        else if (nodeInfo.getPreviousNode() == null || nodeInfo.getPreviousNode() == nodeInfo.getSelf() || (currentId > hash && hash > nodeInfo.getPreviousNode().getId())){
             nodeInfo.setPreviousNode(node);
             System.out.println(nodeInfo.getPreviousNode());
             sendAck(nodeInfo.getSelf().getName(), ipAddress, "next\nname: " + nodeInfo.getSelf().getName() + ";");

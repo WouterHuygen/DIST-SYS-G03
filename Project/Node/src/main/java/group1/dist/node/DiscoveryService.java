@@ -80,15 +80,17 @@ public class DiscoveryService {
                         else if (data.contains("previous")){
                             System.out.println("Response from previous");
                             //TODO: logic
-                            info.setPreviousNode(new Node(data.substring(data.indexOf("name: ")+1, data.indexOf(";")), received.getAddress().getHostAddress()));
+                            info.setPreviousNode(new Node(data.substring(data.indexOf("name: ")+6, data.indexOf(";")), received.getAddress().getHostAddress()));
                             System.out.println(info.getPreviousNode());
                         }
                         else if (data.contains("next")){
                             System.out.println("Response from next");
                             //TODO: logic
-                            info.setNextNode(new Node(data.substring(data.indexOf("name: ")+1, data.indexOf(";")), received.getAddress().getHostAddress()));
+                            info.setNextNode(new Node(data.substring(data.indexOf("name: ")+6, data.indexOf(";")), received.getAddress().getHostAddress()));
                             System.out.println(info.getNextNode());
                         }
+                        receivedMsg = new byte[MAX_MSG_LEN];
+                        received.setData(receivedMsg);
                     } //TODO: clear receivedMsg byte array?
                 } catch (SocketTimeoutException sto){
                     System.out.println("Timeout for ack, " + (success? "ack received" : "no ack received"));
