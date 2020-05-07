@@ -9,6 +9,8 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Set;
 
+import group1.dist.model.Node;
+
 public class MapManager {
     private final String filename = "map.json";
     ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);

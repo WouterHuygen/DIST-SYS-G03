@@ -9,7 +9,10 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.nio.charset.StandardCharsets;
 
+import group1.dist.model.Node;
+
 import static group1.dist.naming.DiscoveryService.*;
+
 
 public class UDPListener implements Runnable{
     private ApplicationContext context;

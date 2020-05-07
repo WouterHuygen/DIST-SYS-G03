@@ -5,6 +5,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import group1.dist.model.Node;
+import group1.dist.model.StatusObject;
 
 @RestController
 public class NamingController {
