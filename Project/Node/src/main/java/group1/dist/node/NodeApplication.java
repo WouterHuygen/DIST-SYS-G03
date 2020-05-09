@@ -5,6 +5,7 @@ import group1.dist.node.Replication.TCPListenerThread;
 import group1.dist.model.NodeInfo;
 import group1.dist.model.Node;
 import group1.dist.node.Replication.*;
+import group1.dist.discovery.DiscoveryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
@@ -68,7 +69,7 @@ public class NodeApplication {
 
     @Bean
     public DiscoveryService discoveryService(){
-        return new DiscoveryService();
+        return new DiscoveryService(context.getBean(NodeInfo.class));
     }
 
     @Bean
@@ -80,7 +81,7 @@ public class NodeApplication {
             System.out.println("join failed");
         }
         System.out.println("started listening");
-        UDPListener listener = new UDPListener(context);
+        NodeUDPListener listener = new NodeUDPListener(context.getBean(NodeInfo.class));
         new Thread(listener).start();
     }
 

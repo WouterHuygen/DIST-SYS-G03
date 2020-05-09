@@ -63,14 +63,9 @@ public class NamingApplication {
     }
 
     @Bean
-    public DiscoveryService discoveryService(){
-        return new DiscoveryService();
-    }
-
-    @Bean
     public void startDiscovery(){
         System.out.println("started listening");
-        NamingUDPListener listener = new NamingUDPListener(context);
+        NamingUDPListener listener = new NamingUDPListener(context.getBean(MapManager.class));
         new Thread(listener).start();
     }
 }

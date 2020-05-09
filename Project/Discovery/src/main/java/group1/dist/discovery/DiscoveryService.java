@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.net.*;
 
 public class DiscoveryService {
-    static final int MULTICAST_PORT = 3009;
-    static final String MULTICAST_GROUP_ADDRESS = "225.4.5.6";
-    static final int ACK_PORT = 3008;
-    static final int MAX_MSG_LEN = 100;
+    public static final int MULTICAST_PORT = 3009;
+    public static final String MULTICAST_GROUP_ADDRESS = "225.4.5.6";
+    public static final int ACK_PORT = 3008;
+    public static final int MAX_MSG_LEN = 100;
 
     private NodeInfo nodeInfo;
 

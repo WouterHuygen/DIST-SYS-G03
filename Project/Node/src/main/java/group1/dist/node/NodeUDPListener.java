@@ -1,51 +1,26 @@
 package group1.dist.node;
 
+import group1.dist.discovery.UDPListener;
 import group1.dist.model.Node;
 import group1.dist.model.NodeInfo;
-import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.nio.charset.StandardCharsets;
 
-import static group1.dist.node.DiscoveryService.*;
+import static group1.dist.discovery.DiscoveryService.ACK_PORT;
 
-public class UDPListener implements Runnable {
+public class NodeUDPListener extends UDPListener {
 
-    private ApplicationContext context;
+    private NodeInfo nodeInfo;
 
-    public UDPListener(ApplicationContext context) {
-        this.context = context;
+    public NodeUDPListener(NodeInfo nodeInfo) {
+        this.nodeInfo = nodeInfo;
     }
 
-    public void run() {
-        System.out.println("Started Listener");
-        while (true) {
-            try (MulticastSocket listenSocket = new MulticastSocket(MULTICAST_PORT)){
-                InetAddress group = InetAddress.getByName(MULTICAST_GROUP_ADDRESS);
-                listenSocket.joinGroup(group);
-
-                byte[] msg = new byte[MAX_MSG_LEN];
-                DatagramPacket packet = new DatagramPacket(msg, msg.length);
-                listenSocket.receive(packet);
-                String data = new String(packet.getData());
-                System.out.println("\nReceived packet from: " + packet.getAddress().getHostAddress());
-                System.out.println("\nMessage: \"" + data + "\"\n");
-                if (data.contains("Joining")){
-                    handleJoin(data.substring(data.indexOf(':')+2, data.indexOf(',')), packet.getAddress());
-                }
-            } catch (IOException e) {
-                System.out.println("MulticastSocket failed");
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void handleJoin(String nodeName, InetAddress ipAddress) {
-        NodeInfo nodeInfo = context.getBean(NodeInfo.class);
+    protected void handleJoin(String nodeName, InetAddress ipAddress) {
         System.out.println(ipAddress.getHostAddress());
         int hash = Node.calculateHash(nodeName);
         System.out.println("calculating hashes");

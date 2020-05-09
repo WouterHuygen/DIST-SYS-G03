@@ -1,7 +1,7 @@
 package group1.dist.naming;
 
 import group1.dist.discovery.UDPListener;
-import org.springframework.context.ApplicationContext;
+import group1.dist.model.Node;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -10,16 +10,13 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.nio.charset.StandardCharsets;
 
-import group1.dist.model.Node;
-
-import static group1.dist.naming.DiscoveryService.*;
-
+import static group1.dist.discovery.DiscoveryService.*;
 
 public class NamingUDPListener extends UDPListener {
-    private ApplicationContext context;
+    private MapManager mapManager;
 
-    public NamingUDPListener(ApplicationContext context) {
-        this.context = context;
+    public NamingUDPListener(MapManager mapManager) {
+        this.mapManager = mapManager;
     }
 
     public void run() {
@@ -45,7 +42,6 @@ public class NamingUDPListener extends UDPListener {
     }
 
     protected void handleJoin(String nodeName, InetAddress ipAddress) {
-        MapManager mapManager = context.getBean(MapManager.class);
         int existingNodes = mapManager.getMap().size();
         String response = "Response from: Naming Server\nExisting nodes: " + existingNodes;
         if (mapManager.addNode(new Node(nodeName, ipAddress.getHostAddress()))) {
