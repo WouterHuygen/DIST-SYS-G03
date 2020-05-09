@@ -1,5 +1,6 @@
 package group1.dist.naming;
 
+import group1.dist.discovery.UDPListener;
 import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
@@ -14,10 +15,10 @@ import group1.dist.model.Node;
 import static group1.dist.naming.DiscoveryService.*;
 
 
-public class UDPListener implements Runnable{
+public class NamingUDPListener extends UDPListener {
     private ApplicationContext context;
 
-    public UDPListener(ApplicationContext context) {
+    public NamingUDPListener(ApplicationContext context) {
         this.context = context;
     }
 
@@ -43,7 +44,7 @@ public class UDPListener implements Runnable{
         }
     }
 
-    private void handleJoin(String nodeName, InetAddress ipAddress) {
+    protected void handleJoin(String nodeName, InetAddress ipAddress) {
         MapManager mapManager = context.getBean(MapManager.class);
         int existingNodes = mapManager.getMap().size();
         String response = "Response from: Naming Server\nExisting nodes: " + existingNodes;

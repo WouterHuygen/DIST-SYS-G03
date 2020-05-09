@@ -70,7 +70,7 @@ public class NamingApplication {
     @Bean
     public void startDiscovery(){
         System.out.println("started listening");
-        UDPListener listener = new UDPListener(context);
+        NamingUDPListener listener = new NamingUDPListener(context);
         new Thread(listener).start();
     }
 }
