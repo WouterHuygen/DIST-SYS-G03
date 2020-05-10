@@ -5,7 +5,6 @@ import group1.dist.node.NodeInfo;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class FileReplicationHandler {
     private ApplicationContext context;
@@ -17,12 +16,11 @@ public class FileReplicationHandler {
 
     public void replicateFile(File file){
         String ip = APICall.call(file.getName());
-
         NodeInfo nodeInfo = context.getBean(NodeInfo.class);
         if(ip != null){
             if(ip.equals(nodeInfo.getSelf().getIp())){
                 System.out.println("OWN IP");
-                if(nodeInfo.getPreviousNode() != null)
+                if(nodeInfo.getPreviousNode() != null && nodeInfo.getPreviousNode() != nodeInfo.getSelf())
                     ip = nodeInfo.getPreviousNode().getIp();
                 else{
                     System.out.println("No previous node, no replication needed");
@@ -32,7 +30,7 @@ public class FileReplicationHandler {
             try{
                 if(!ip.equals("0")){
                     FileTransferServer fileTransferServer = new FileTransferServer();
-                    fileTransferServer.serverRun(file.getName(), ip);
+                    fileTransferServer.serverRun(file, ip);
                 }
             } catch(Exception e){
                 e.printStackTrace();
