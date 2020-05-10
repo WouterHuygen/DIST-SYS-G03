@@ -10,6 +10,13 @@ public class DiscoveryMessage {
     private int existingNodes;
     private String newHostname;
 
+    public DiscoveryMessage() {
+    }
+
+    public DiscoveryMessage(MessageType type) {
+        this.type = type;
+    }
+
     public MessageType getType() {
         return type;
     }

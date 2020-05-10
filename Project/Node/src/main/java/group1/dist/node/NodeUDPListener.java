@@ -1,5 +1,7 @@
 package group1.dist.node;
 
+import group1.dist.discovery.DiscoveryMessage;
+import group1.dist.discovery.MessageType;
 import group1.dist.discovery.UDPListener;
 import group1.dist.model.Node;
 import group1.dist.model.NodeInfo;
@@ -31,28 +33,30 @@ public class NodeUDPListener extends UDPListener {
         if (nodeInfo.getNextNode() == nodeInfo.getSelf() && nodeInfo.getPreviousNode() == nodeInfo.getSelf()) {
             nodeInfo.setNextNode(node);
             System.out.println(nodeInfo.getNextNode());
-            sendAck(nodeInfo.getSelf().getName(), ipAddress, "previous\nname: " + nodeInfo.getSelf().getName() + ";");
+            sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.PREVIOUS_NODE);
             nodeInfo.setPreviousNode(node);
             System.out.println(nodeInfo.getPreviousNode());
-            sendAck(nodeInfo.getSelf().getName(), ipAddress, "next\nname: " + nodeInfo.getSelf().getName() + ";");
+            sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.NEXT_NODE);
         }
         else if (nodeInfo.getNextNode() == null || nodeInfo.getNextNode() == nodeInfo.getSelf() || (currentId < hash && hash < nodeInfo.getNextNode().getId())) {
             nodeInfo.setNextNode(node);
             System.out.println(nodeInfo.getNextNode());
-            sendAck(nodeInfo.getSelf().getName(), ipAddress, "previous\nname: " + nodeInfo.getSelf().getName() + ";");
+            sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.PREVIOUS_NODE);
         }
         else if (nodeInfo.getPreviousNode() == null || nodeInfo.getPreviousNode() == nodeInfo.getSelf() || (currentId > hash && hash > nodeInfo.getPreviousNode().getId())){
             nodeInfo.setPreviousNode(node);
             System.out.println(nodeInfo.getPreviousNode());
-            sendAck(nodeInfo.getSelf().getName(), ipAddress, "next\nname: " + nodeInfo.getSelf().getName() + ";");
+            sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.NEXT_NODE);
         }
     }
 
-    private void sendAck(String srcHostname, InetAddress destIp, String message) {
-        String response = "Response from: " + srcHostname + "\nMessage: " + message;
+    private void sendAck(String srcHostname, InetAddress destIp, MessageType type) {
+        DiscoveryMessage response = new DiscoveryMessage(type);
+        response.setNewHostname(srcHostname);
+        response.setIp(destIp.getHostAddress());
         System.out.println("sending response: \"" + response + "\"");
         try (DatagramSocket unicastSocket = new DatagramSocket(ACK_PORT)){
-            byte[] data = response.getBytes(StandardCharsets.UTF_8);
+            byte[] data = response.toString().getBytes(StandardCharsets.UTF_8);
             DatagramPacket packet = new DatagramPacket(data, data.length, destIp, ACK_PORT);
             unicastSocket.send(packet);
             System.out.println("response sent");

@@ -1,5 +1,6 @@
 package group1.dist.discovery;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import group1.dist.model.Node;
 import group1.dist.model.NodeInfo;
 
@@ -23,10 +24,13 @@ public class DiscoveryService {
         try (MulticastSocket multicastSocket = new MulticastSocket()){
             InetAddress group = InetAddress.getByName(MULTICAST_GROUP_ADDRESS);
             String nodeName = nodeInfo.getSelf().getName();
-            String msg = "Joining: " + nodeName + ", " + InetAddress.getLocalHost().getHostAddress();
-            DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.length(), group, MULTICAST_PORT);
+            DiscoveryMessage msg = new DiscoveryMessage(MessageType.JOINING_NODE);
+            msg.setIp(nodeInfo.getSelf().getIp());
+            msg.setName(nodeName);
+            String strMsg = msg.toString();
+            DatagramPacket packet = new DatagramPacket(strMsg.getBytes(), strMsg.length(), group, MULTICAST_PORT);
             multicastSocket.send(packet);
-            System.out.println("Sent message: \"" + msg + "\"");
+            System.out.println("Sent message: \"" + strMsg + "\"");
             success = receiveAck();
         } catch (UnknownHostException uhe) {
             System.out.println("Unknown host 225.4.5.6");
@@ -58,43 +62,48 @@ public class DiscoveryService {
         try(DatagramSocket UDPSocket = new DatagramSocket(ACK_PORT)){
             byte[] receivedMsg = new byte[MAX_MSG_LEN];
             DatagramPacket received = new DatagramPacket(receivedMsg, receivedMsg.length);
+            ObjectMapper objectMapper = new ObjectMapper();
             while (true){
                 try{
                     UDPSocket.setSoTimeout(1000);
                     UDPSocket.receive(received);
                     String data = new String(received.getData());
                     System.out.println("Received: " + data);
-                    data = data.toLowerCase();
-                    if (data.contains("response from")) { //TODO: depending on functionality
-                        System.out.println("Received ACK");
-                        NodeInfo info = nodeInfo;
-                        success = true;
-                        if (data.contains("naming")){
-                            System.out.println("Response from naming");
-                            //TODO: logic
-                            if (data.contains("0")) {
-                                info.setNextNode(info.getSelf());
-                                System.out.println(info.getNextNode());
-                                info.setPreviousNode(info.getSelf());
-                                System.out.println(info.getPreviousNode());
-                            }
-                        }
-                        else if (data.contains("previous")){
-                            System.out.println("Response from previous");
-                            //TODO: logic
-                            info.setPreviousNode(new Node(data.substring(data.indexOf("name: ")+6, data.indexOf(";")), received.getAddress().getHostAddress()));
-                            System.out.println(info.getPreviousNode());
-                        }
-                        else if (data.contains("next")){
+                    DiscoveryMessage message = objectMapper.readValue(data, DiscoveryMessage.class);
+                    switch (message.getType()) {
+                        case NEXT_NODE:
                             System.out.println("Response from next");
-                            //TODO: logic
-                            info.setNextNode(new Node(data.substring(data.indexOf("name: ")+6, data.indexOf(";")), received.getAddress().getHostAddress()));
-                            System.out.println(info.getNextNode());
-                        }
-                        receivedMsg = new byte[MAX_MSG_LEN];
-                        received.setData(receivedMsg);
-                    } //TODO: clear receivedMsg byte array?
-                } catch (SocketTimeoutException sto){
+                            nodeInfo.setNextNode(new Node(message.getName(), message.getIp()));
+                            System.out.println(nodeInfo.getNextNode());
+                            System.out.println("Received ACK");
+                            success = true;
+                            break;
+                        case PREVIOUS_NODE:
+                            System.out.println("Response from previous");
+                            nodeInfo.setPreviousNode(new Node(message.getName(), message.getIp()));
+                            System.out.println(nodeInfo.getPreviousNode());
+                            System.out.println("Received ACK");
+                            success = true;
+                            break;
+                        case NAMING_RESPONSE:
+                            System.out.println("Response from naming");
+                            if (message.getExistingNodes() == 0) {
+                                nodeInfo.setNextNode(nodeInfo.getSelf());
+                                System.out.println(nodeInfo.getNextNode());
+                                nodeInfo.setPreviousNode(nodeInfo.getSelf());
+                                System.out.println(nodeInfo.getPreviousNode());
+                            }
+                            if (message.getNewHostname() != null) {
+                                //TODO: shutdown
+                                System.out.println("shutting down for restart with: " + message.getNewHostname());
+                            }
+                            System.out.println("Received ACK");
+                            success = true;
+                            break;
+                    }
+                    receivedMsg = new byte[MAX_MSG_LEN];
+                    received.setData(receivedMsg);
+               } catch (SocketTimeoutException sto){
                     System.out.println("Timeout for ack, " + (success? "ack received" : "no ack received"));
                     break;
                 } catch (IOException e) {

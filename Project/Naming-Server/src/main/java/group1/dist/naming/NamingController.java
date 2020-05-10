@@ -15,13 +15,7 @@ public class NamingController {
     private ApplicationContext context;
 
     @Autowired
-    private MapManager mapManager; //TODO: test autowired
-
-    NamingController(){
-        //mapManager.addNode(new Node("node1", "10.0.3.15"));
-        //mapManager.addNode(new Node("node2", "10.0.3.17"));
-        //TODO: dependency injection for MapManager?
-    }
+    private MapManager mapManager;
 
     @GetMapping("/resolve")
     public StatusObject<Node> ResolveNaming(@RequestParam(value = "filename") String filename)  {

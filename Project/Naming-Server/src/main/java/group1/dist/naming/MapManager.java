@@ -28,7 +28,7 @@ public class MapManager {
     }
 
     Node deleteNode(String nodeName){
-        String key = Integer.toString(calculateHash(nodeName));
+        String key = Integer.toString(Node.calculateHash(nodeName));
         if (map.containsKey(key)){
             Node node = map.get(key);
             map.remove(key);
@@ -37,18 +37,8 @@ public class MapManager {
         return null;
     }
 
-    static int calculateHash(String name) {
-        /*int hash = name.hashCode() % 32768;
-        int hash2 = name.hashCode() & (32768 - 1);
-        int hash3 = hash*hash2;
-        int hash4 = hash3 % 32768;
-        return hash4;*/
-        int hash = (name.hashCode() & (32768-1));
-        return ((hash * hash) & (32768 - 1)); // & (32768 - 1) = performance % 32768
-    }
-
     Node findNodeIp(String filename) {
-        return findNodeIp(calculateHash(filename));
+        return findNodeIp(Node.calculateHash(filename));
     }
 
     Node findNodeIp(int hash) {
@@ -72,7 +62,7 @@ public class MapManager {
         try {
             String jsonString = readFromFile();
             if (!jsonString.equals(""))
-                map = mapper.readValue(jsonString, new TypeReference<HashMap<String, Node>>(){}); //TODO: maps to hasmap<string,string> => problem
+                map = mapper.readValue(jsonString, new TypeReference<HashMap<String, Node>>(){});
             else map = new HashMap<>();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
