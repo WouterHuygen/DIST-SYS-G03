@@ -68,6 +68,11 @@ public class NodeApplication {
     }
 
     @Bean
+    public FileReplicationHandler replicationHandler() {
+        return new FileReplicationHandler(context);
+    }
+
+    @Bean
     public void startDiscovery(){
         if (discoveryService().sendJoin()) {
             System.out.println("join sent successfully");
@@ -82,11 +87,10 @@ public class NodeApplication {
 
     @Bean
     public void startReplication(){
-        FileReplicationHandler replicationHandler = new FileReplicationHandler(context);
         File folder = new File("/home/pi/node/ownFiles");
         if(folder.listFiles() != null) {
             for (File fileEntry : folder.listFiles()){
-                replicationHandler.replicateFile(fileEntry);
+                replicationHandler().replicateFile(fileEntry);
             }
         }
     }
@@ -96,6 +100,7 @@ public class NodeApplication {
         System.out.println("Starting shutdown procedure");
         try {
             discoveryService().shutdown(context.getBean(NodeInfo.class));
+            replicationHandler().shutDown();
         }catch (IOException e){
             System.out.println(e);
         }
