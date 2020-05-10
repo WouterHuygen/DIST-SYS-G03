@@ -32,13 +32,13 @@ public class FileCheckThread implements Runnable {
                 //print new files
                 for (File file : newFileList) {
                     System.out.println("New/Updated file: " + file.getName());
-                    replicationHandler.ReplicateFile(file);
+                    replicationHandler.replicateFile(file);
                 }
 
                 //print deleted files
                 for (File file: deletedFileList) {
                     System.out.println("Deleted file: " + file.getName());
-                    replicationHandler.DeleteFile(file);
+                    replicationHandler.deleteFile(file);
                 }
 
                 Thread.sleep(sleepDuration);

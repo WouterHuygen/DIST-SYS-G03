@@ -13,7 +13,7 @@ import java.util.List;
 
 public class FileTransferServer {
 
-    public void ServerRun(String filename, String IP) throws Exception {
+    public void serverRun(File file, String IP) throws Exception {
 
         NetworkInterface networkInterface = NetworkInterface.getByName("ethwe0");
 
@@ -21,17 +21,15 @@ public class FileTransferServer {
 
         //Initialize Sockets
         TCPMessage msg = new TCPMessage();
-        System.out.println("ip used for TCP: " + IP);
+        System.out.println("IP used for TCP: " + IP);
         msg.startConnection(IP, 5556);
-        msg.sendReplicationMessage(networkInterface.getInetAddresses().nextElement().getHostAddress(), filename);
+        msg.sendReplicationMessage(networkInterface.getInetAddresses().nextElement().getHostAddress(), file.getName());
         msg.stopConnection();
 
         ServerSocket ssock = new ServerSocket(5000);
         Socket socket = ssock.accept();
 
         if(IP.equals(socket.getInetAddress().getHostAddress())){
-            //Specify the file
-            File file = new File("/home/pi/node/ownFiles/" + filename);
             FileInputStream fis = new FileInputStream(file);
             BufferedInputStream bis = new BufferedInputStream(fis);
 

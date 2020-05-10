@@ -14,14 +14,13 @@ public class FileReplicationHandler {
         tcpMessage = new TCPMessage();
     }
 
-    public void ReplicateFile(File file){
-        String ip = APICall.Call(file.getName());
-
+    public void replicateFile(File file){
+        String ip = APICall.call(file.getName());
         NodeInfo nodeInfo = context.getBean(NodeInfo.class);
         if(ip != null){
             if(ip.equals(nodeInfo.getSelf().getIp())){
                 System.out.println("OWN IP");
-                if(nodeInfo.getPreviousNode() != null)
+                if(nodeInfo.getPreviousNode() != null && nodeInfo.getPreviousNode() != nodeInfo.getSelf())
                     ip = nodeInfo.getPreviousNode().getIp();
                 else{
                     System.out.println("No previous node, no replication needed");
@@ -31,7 +30,7 @@ public class FileReplicationHandler {
             try{
                 if(!ip.equals("0")){
                     FileTransferServer fileTransferServer = new FileTransferServer();
-                    fileTransferServer.ServerRun(file.getName(), ip);
+                    fileTransferServer.serverRun(file, ip);
                 }
             } catch(Exception e){
                 e.printStackTrace();
@@ -39,8 +38,8 @@ public class FileReplicationHandler {
         }
     }
 
-    public void DeleteFile(File file){
-        String ip = APICall.Call(file.getName());
+    public void deleteFile(File file){
+        String ip = APICall.call(file.getName());
 
         NodeInfo nodeInfo = context.getBean(NodeInfo.class);
         if(ip != null){
@@ -68,5 +67,19 @@ public class FileReplicationHandler {
         }
     }
 
+    public void shutDown(){
+        File folder = new File("/home/pi/node/ownFiles");
+        if(folder.listFiles() != null) {
+            for (File fileEntry : folder.listFiles()){
+                deleteFile(fileEntry);
+            }
+        }
 
+        folder = new File("/home/pi/node/replicatedFiles");
+        if(folder.listFiles() != null) {
+            for (File fileEntry : folder.listFiles()){
+                replicateFile(fileEntry);
+            }
+        }
+    }
 }

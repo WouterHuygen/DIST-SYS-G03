@@ -9,7 +9,7 @@ import java.net.Socket;
 
 public class FileTransferClient {
 
-    public static void ClientRun(String ip, String fileName) throws Exception {
+    public static void clientRun(String ip, String fileName) throws Exception {
         System.out.println("Client startup!");
         //Initialize socket
         Socket socket = new Socket(InetAddress.getByName(ip), 5000);

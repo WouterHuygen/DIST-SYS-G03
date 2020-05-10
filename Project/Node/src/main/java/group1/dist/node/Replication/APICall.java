@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 
 public class APICall {
-    public static String Call(String filename){
+    public static String call(String filename){
         String IP = null;
         try{
             //Call
