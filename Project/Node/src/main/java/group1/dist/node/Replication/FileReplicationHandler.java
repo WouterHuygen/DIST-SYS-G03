@@ -5,6 +5,7 @@ import group1.dist.node.NodeInfo;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class FileReplicationHandler {
     private ApplicationContext context;
@@ -69,8 +70,18 @@ public class FileReplicationHandler {
     }
 
     public void shutDown(){
+        File folder = new File("/home/pi/node/ownFiles");
+        if(folder.listFiles() != null) {
+            for (File fileEntry : folder.listFiles()){
+                deleteFile(fileEntry);
+            }
+        }
 
+        folder = new File("/home/pi/node/replicatedFiles");
+        if(folder.listFiles() != null) {
+            for (File fileEntry : folder.listFiles()){
+                replicateFile(fileEntry);
+            }
+        }
     }
-
-
 }
