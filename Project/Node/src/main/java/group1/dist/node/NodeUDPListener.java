@@ -30,35 +30,35 @@ public class NodeUDPListener extends UDPListener {
         System.out.println("hash Id: " + hash);
         int currentId = nodeInfo.getSelf().getId();
         Node node = new Node(nodeName, ipAddress.getHostAddress());
-        if (nodeInfo.getNextNode() == nodeInfo.getSelf() && nodeInfo.getPreviousNode() == nodeInfo.getSelf()) {
-            nodeInfo.setNextNode(node);
-            System.out.println(nodeInfo.getNextNode());
-            sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.PREVIOUS_NODE);
-            nodeInfo.setPreviousNode(node);
-            System.out.println(nodeInfo.getPreviousNode());
-            sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.NEXT_NODE);
+        boolean isPrevious =  nodeInfo.getNextNode() == nodeInfo.getSelf();
+        boolean isNext = nodeInfo.getPreviousNode() == nodeInfo.getSelf();
+        if (nodeInfo.getNextNode() == null || currentId < hash && (hash < nodeInfo.getNextNode().getId() || currentId > nodeInfo.getNextNode().getId())) {
+            isPrevious = true;
         }
-        else if (nodeInfo.getNextNode() == null || nodeInfo.getNextNode() == nodeInfo.getSelf() || (currentId < hash && hash < nodeInfo.getNextNode().getId())) {
-            nodeInfo.setNextNode(node);
-            System.out.println(nodeInfo.getNextNode());
-            sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.PREVIOUS_NODE);
-        }
-        else if (nodeInfo.getPreviousNode() == null || nodeInfo.getPreviousNode() == nodeInfo.getSelf() || (currentId > hash && hash > nodeInfo.getPreviousNode().getId())){
-            nodeInfo.setPreviousNode(node);
-            System.out.println(nodeInfo.getPreviousNode());
-            sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.NEXT_NODE);
+        if (nodeInfo.getPreviousNode() == null || currentId > hash && (hash > nodeInfo.getPreviousNode().getId() || currentId < nodeInfo.getPreviousNode().getId())){
+            isNext = true;
         }
         else {
             System.out.println("self: " + nodeInfo.getSelf());
             System.out.println("next: " + nodeInfo.getNextNode());
             System.out.println("previous: " + nodeInfo.getPreviousNode());
         }
+        if (isPrevious) {
+            nodeInfo.setNextNode(node);
+            System.out.println(nodeInfo.getNextNode());
+            sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.PREVIOUS_NODE);
+        }
+        if (isNext) {
+            nodeInfo.setPreviousNode(node);
+            System.out.println(nodeInfo.getPreviousNode());
+            sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.NEXT_NODE);
+        }
     }
 
     private void sendAck(String srcHostname, InetAddress destIp, MessageType type) {
         DiscoveryMessage response = new DiscoveryMessage(type);
         response.setName(srcHostname);
-        response.setIp(destIp.getHostAddress());
+        response.setIp(nodeInfo.getSelf().getIp());
         System.out.println("sending response: \"" + response + "\"");
         try (DatagramSocket unicastSocket = new DatagramSocket(ACK_PORT)){
             byte[] data = response.toString().getBytes(StandardCharsets.UTF_8);
