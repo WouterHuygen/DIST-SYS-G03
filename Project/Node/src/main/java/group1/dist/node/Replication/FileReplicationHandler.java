@@ -46,7 +46,7 @@ public class FileReplicationHandler {
             if(ip.equals(nodeInfo.getSelf().getIp())){
                 System.out.println("OWN IP");
 
-                if(nodeInfo.getPreviousNode() != null)
+                if(nodeInfo.getPreviousNode() != null && nodeInfo.getPreviousNode() != nodeInfo.getSelf())
                     ip = nodeInfo.getPreviousNode().getIp();
                 else{
                     System.out.println("No previous node, no need to delete replicated file");
