@@ -52,7 +52,7 @@ public class NodeUDPListener extends UDPListener {
 
     private void sendAck(String srcHostname, InetAddress destIp, MessageType type) {
         DiscoveryMessage response = new DiscoveryMessage(type);
-        response.setNewHostname(srcHostname);
+        response.setName(srcHostname);
         response.setIp(destIp.getHostAddress());
         System.out.println("sending response: \"" + response + "\"");
         try (DatagramSocket unicastSocket = new DatagramSocket(ACK_PORT)){
