@@ -30,19 +30,10 @@ public class NodeUDPListener extends UDPListener {
         System.out.println("hash Id: " + hash);
         int currentId = nodeInfo.getSelf().getId();
         Node node = new Node(nodeName, ipAddress.getHostAddress());
-        boolean isPrevious =  nodeInfo.getNextNode() == nodeInfo.getSelf();
-        boolean isNext = nodeInfo.getPreviousNode() == nodeInfo.getSelf();
-        if (nodeInfo.getNextNode() == null || currentId < hash && (hash < nodeInfo.getNextNode().getId() || currentId > nodeInfo.getNextNode().getId())) {
-            isPrevious = true;
-        }
-        if (nodeInfo.getPreviousNode() == null || currentId > hash && (hash > nodeInfo.getPreviousNode().getId() || currentId < nodeInfo.getPreviousNode().getId())){
-            isNext = true;
-        }
-        else {
-            System.out.println("self: " + nodeInfo.getSelf());
-            System.out.println("next: " + nodeInfo.getNextNode());
-            System.out.println("previous: " + nodeInfo.getPreviousNode());
-        }
+        boolean isPrevious =  nodeInfo.getNextNode() == null || nodeInfo.getNextNode() == nodeInfo.getSelf()
+                || (currentId < hash && (hash < nodeInfo.getNextNode().getId() || currentId > nodeInfo.getNextNode().getId() || nodeInfo.getNextNode().getId() == nodeInfo.getPreviousNode().getId()));
+        boolean isNext = nodeInfo.getPreviousNode() == null || nodeInfo.getPreviousNode() == nodeInfo.getSelf()
+                || (currentId > hash && (hash > nodeInfo.getPreviousNode().getId() || currentId < nodeInfo.getPreviousNode().getId() || nodeInfo.getNextNode().getId() == nodeInfo.getPreviousNode().getId()));
         if (isPrevious) {
             nodeInfo.setNextNode(node);
             System.out.println(nodeInfo.getNextNode());
@@ -53,6 +44,9 @@ public class NodeUDPListener extends UDPListener {
             System.out.println(nodeInfo.getPreviousNode());
             sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.NEXT_NODE);
         }
+        System.out.println("self: " + nodeInfo.getSelf());
+        System.out.println("next: " + nodeInfo.getNextNode());
+        System.out.println("previous: " + nodeInfo.getPreviousNode());
     }
 
     private void sendAck(String srcHostname, InetAddress destIp, MessageType type) {
