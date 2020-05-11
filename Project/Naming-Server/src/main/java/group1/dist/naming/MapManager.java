@@ -32,6 +32,8 @@ public class MapManager {
         if (map.containsKey(key)){
             Node node = map.get(key);
             map.remove(key);
+            saveMap();
+            System.out.println("map updated with delete");
             return node;
         }
         return null;
@@ -75,8 +77,6 @@ public class MapManager {
         boolean success = true;
         try {
             String jsonMap = mapper.writeValueAsString(map);
-            byte [] byteMap = mapper.writeValueAsBytes(map);
-            String test = new String(byteMap);
             success = writeToFile(jsonMap);
         } catch (JsonProcessingException e) {
             e.printStackTrace();

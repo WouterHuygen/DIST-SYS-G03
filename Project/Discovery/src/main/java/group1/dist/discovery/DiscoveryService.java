@@ -46,6 +46,8 @@ public class DiscoveryService {
         URL url = new URL("http://10.0.3.13:8080/nodes?name=" + nodeInfo.getSelf().getName());
         HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
         httpCon.setRequestMethod("DELETE");
+        httpCon.connect();
+        System.out.println(httpCon.getResponseCode());
         try {
             Node previousNode = nodeInfo.getPreviousNode();
             Node nextNode = nodeInfo.getNextNode();

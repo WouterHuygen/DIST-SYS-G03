@@ -19,7 +19,8 @@ public class NamingController {
 
     @GetMapping("/resolve")
     public StatusObject<Node> ResolveNaming(@RequestParam(value = "filename") String filename)  {
-        StatusObject<Node> result = new StatusObject<>(true, "IP found", mapManager.findNodeIp(filename));
+        Node node = mapManager.findNodeIp(filename);
+        StatusObject<Node> result = new StatusObject<>(node != null, "IP found", node);
         return result; //TODO: map to JSON?
     }
 
@@ -51,6 +52,7 @@ public class NamingController {
             status = "Removed Node";
         else
             status = "Node does not exist";
+        System.out.println("Removing response: " + status);
         return new StatusObject<Node>(node != null, status, node);
     }
 }
