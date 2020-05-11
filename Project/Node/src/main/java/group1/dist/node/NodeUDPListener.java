@@ -48,6 +48,11 @@ public class NodeUDPListener extends UDPListener {
             System.out.println(nodeInfo.getPreviousNode());
             sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.NEXT_NODE);
         }
+        else {
+            System.out.println("self: " + nodeInfo.getSelf());
+            System.out.println("next: " + nodeInfo.getNextNode());
+            System.out.println("previous: " + nodeInfo.getPreviousNode());
+        }
     }
 
     private void sendAck(String srcHostname, InetAddress destIp, MessageType type) {
