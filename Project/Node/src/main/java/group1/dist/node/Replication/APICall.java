@@ -9,9 +9,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-
-
 
 public class APICall {
     public static String call(String filename){
@@ -21,7 +18,7 @@ public class APICall {
             // TODO: get naming server ip from multicast message
             System.out.println("making API call");
 
-            URL url = new URL("http://10.0.3.13:8080/resolve?filename=" + filename);
+            URL url = new URL("http://10.0.3.9:8080/resolve?filename=" + filename);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
 
