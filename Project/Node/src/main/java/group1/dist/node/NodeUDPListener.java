@@ -31,9 +31,11 @@ public class NodeUDPListener extends UDPListener {
         int currentId = nodeInfo.getSelf().getId();
         Node node = new Node(nodeName, ipAddress.getHostAddress());
         boolean isPrevious =  nodeInfo.getNextNode() == null || nodeInfo.getNextNode() == nodeInfo.getSelf()
-                || (currentId < hash && (hash < nodeInfo.getNextNode().getId() || currentId > nodeInfo.getNextNode().getId() || nodeInfo.getNextNode().getId() == nodeInfo.getPreviousNode().getId()));
+                || (currentId < hash && (hash < nodeInfo.getNextNode().getId() || currentId > nodeInfo.getNextNode().getId() )
+                || (currentId > hash && nodeInfo.getNextNode().getId() == nodeInfo.getPreviousNode().getId()));
         boolean isNext = nodeInfo.getPreviousNode() == null || nodeInfo.getPreviousNode() == nodeInfo.getSelf()
-                || (currentId > hash && (hash > nodeInfo.getPreviousNode().getId() || currentId < nodeInfo.getPreviousNode().getId() || nodeInfo.getNextNode().getId() == nodeInfo.getPreviousNode().getId()));
+                || (currentId > hash && (hash > nodeInfo.getPreviousNode().getId() || currentId < nodeInfo.getPreviousNode().getId())
+                || (currentId < hash && nodeInfo.getNextNode().getId() == nodeInfo.getPreviousNode().getId()));
         if (isPrevious) {
             nodeInfo.setNextNode(node);
             System.out.println(nodeInfo.getNextNode());
