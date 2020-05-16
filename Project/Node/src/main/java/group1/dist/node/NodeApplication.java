@@ -93,9 +93,12 @@ public class NodeApplication {
     @Bean
     public void startReplication(){
         File folder = new File("/home/pi/node/ownFiles");
+        FileLogHandler logHandler = new FileLogHandler();
         if(folder.listFiles() != null) {
             for (File fileEntry : folder.listFiles()){
+                String logPath = logHandler.createNewFileLog(fileEntry.getPath(), context.getBean(NodeInfo.class).getSelf().getIp());
                 replicationHandler().replicateFile(fileEntry);
+                replicationHandler().replicateFile(new File(logPath));
             }
         }
     }
