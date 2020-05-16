@@ -28,14 +28,53 @@ public class NodeUDPListener extends UDPListener {
         System.out.println("calculating hashes");
         System.out.println("current Id: " + nodeInfo.getSelf().getId());
         System.out.println("hash Id: " + hash);
-        int currentId = nodeInfo.getSelf().getId();
         Node node = new Node(nodeName, ipAddress.getHostAddress());
-        boolean isPrevious =  nodeInfo.getNextNode() == null || nodeInfo.getNextNode() == nodeInfo.getSelf()
-                || (currentId < hash && (hash < nodeInfo.getNextNode().getId() || currentId > nodeInfo.getNextNode().getId() )
-                || (currentId > hash && nodeInfo.getNextNode().getId() == nodeInfo.getPreviousNode().getId()));
-        boolean isNext = nodeInfo.getPreviousNode() == null || nodeInfo.getPreviousNode() == nodeInfo.getSelf()
-                || (currentId > hash && (hash > nodeInfo.getPreviousNode().getId() || currentId < nodeInfo.getPreviousNode().getId())
-                || (currentId < hash && nodeInfo.getNextNode().getId() == nodeInfo.getPreviousNode().getId()));
+        int currentId = nodeInfo.getSelf().getId();
+        int nextId = 0, previousId = 0;
+        if (nodeInfo.getNextNode() != null)
+            nextId = nodeInfo.getNextNode().getId();
+        if (nodeInfo.getPreviousNode() != null)
+            previousId = nodeInfo.getPreviousNode().getId();
+        boolean isPrevious =  nextId == 0 || nextId == currentId
+                || (currentId < hash         // for new node to become next, hash should be bigger than current hash
+                && (hash < nextId            // either hash is between this node and next node
+                    || nextId < currentId))  // this node is end of circle and new node will become new end of circle
+                || hash < nextId && nextId < currentId; // this node is end of circle and new node becomes new begin of circle
+        boolean isNext = previousId == 0 || previousId == currentId
+                || (currentId > hash            // for new node to become previous, hash should be smaller than current hash
+                && (hash > previousId           // either hash is between this node and previous node
+                    || previousId > currentId)) // this node is start of circle and new node will become new start of circle
+                || hash > previousId && previousId > currentId; // this node is the start of the circle and new node is new end of circle
+        if (nextId == previousId && nextId != currentId) { // there were 2 nodes and a third node needs to be added
+            if (hash > currentId) {
+                if (hash < nextId){                 // the new node is between the two existing nodes
+                    isPrevious = true;
+                    isNext = false;
+                }
+                else if (currentId < nextId){       // the new node is after the two existing nodes and this node was the first node
+                    isNext = true;
+                    isPrevious = false;
+                }
+                else {                              // the new node is after the two existing nodes and this node was the last node
+                    isPrevious = true;
+                    isNext = false;
+                }
+            }
+            else {
+                if (hash > previousId) {            // the new node is between the two existing nodes
+                    isNext = true;
+                    isPrevious = false;
+                }
+                else if (currentId > previousId){   // the new node is before the two existing nodes and this node was the last node
+                    isPrevious = true;
+                    isNext = false;
+                }
+                else {                              // the new node is before the two existing nodes and this node was the first node
+                    isNext = true;
+                    isPrevious = false;
+                }
+            }
+        }
         if (isPrevious) {
             nodeInfo.setNextNode(node);
             System.out.println(nodeInfo.getNextNode());

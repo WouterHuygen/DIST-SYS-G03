@@ -3,6 +3,7 @@ package group1.dist.node.Replication;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group1.dist.model.Node;
+import group1.dist.model.NodeInfo;
 import group1.dist.model.StatusObject;
 
 import java.io.BufferedReader;
@@ -11,14 +12,21 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class APICall {
-    public static String call(String filename){
+    private NodeInfo nodeInfo;
+
+    public APICall(NodeInfo nodeInfo) {
+        this.nodeInfo = nodeInfo;
+    }
+
+    public String call(String filename){
         String IP = null;
         try{
             //Call
-            // TODO: get naming server ip from multicast message
             System.out.println("making API call");
 
-            URL url = new URL("http://10.0.3.9:8080/resolve?filename=" + filename);
+            String namingIP = nodeInfo.getNamingIp();
+            if (namingIP == null) throw new Exception("no naming ip");
+            URL url = new URL("http://" + namingIP + ":8080/resolve?filename=" + filename);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
 

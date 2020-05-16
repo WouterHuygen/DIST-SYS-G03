@@ -65,7 +65,7 @@ public class NamingApplication {
     @Bean
     public void startDiscovery(){
         System.out.println("started listening");
-        NamingUDPListener listener = new NamingUDPListener(context.getBean(MapManager.class));
+        NamingUDPListener listener = new NamingUDPListener(context.getBean(MapManager.class), context.getBean(NodeInfo.class));
         new Thread(listener).start();
     }
 }

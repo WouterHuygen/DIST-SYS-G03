@@ -74,7 +74,7 @@ public class NodeApplication {
 
     @Bean
     public FileReplicationHandler replicationHandler() {
-        return new FileReplicationHandler(context);
+        return new FileReplicationHandler(context.getBean(NodeInfo.class));
     }
 
     @Bean
@@ -107,14 +107,14 @@ public class NodeApplication {
             discoveryService().shutdown(context.getBean(NodeInfo.class));
             replicationHandler().shutDown();
         }catch (IOException e){
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
     @Bean
     public void startFileChecker(){
         //thread to check new files or file changes
-        Runnable fileChecker = new FileCheckThread("/home/pi/node/ownFiles", 10000, context);
+        Runnable fileChecker = new FileCheckThread("/home/pi/node/ownFiles", 10000, context.getBean(NodeInfo.class));
         new Thread(fileChecker).start();
     }
 }

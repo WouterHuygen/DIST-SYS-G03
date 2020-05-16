@@ -1,5 +1,6 @@
 package group1.dist.node.Replication;
 
+import group1.dist.model.NodeInfo;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
@@ -10,19 +11,19 @@ public class FileCheckThread implements Runnable {
     private long sleepDuration;
     private String path;
     private static ArrayList<File> oldFileList = new ArrayList<File>();
-    private ApplicationContext context;
+    private NodeInfo nodeInfo;
     //TODO: context ? is dat oke als die gewoon hier ook meegegeven wordt ?
-    public FileCheckThread(String _path, long _sleepDuration, ApplicationContext _context){
+    public FileCheckThread(String _path, long _sleepDuration, NodeInfo nodeInfo){
         sleepDuration = _sleepDuration;
         path = _path;
-        context = _context;
+        this.nodeInfo = nodeInfo;
     }
 
     @Override
     public void run() {
         ArrayList<File> newFileList;
         ArrayList<File> deletedFileList;
-        FileReplicationHandler replicationHandler = new FileReplicationHandler(context);
+        FileReplicationHandler replicationHandler = new FileReplicationHandler(nodeInfo);
 
         while (true) {
             try {
