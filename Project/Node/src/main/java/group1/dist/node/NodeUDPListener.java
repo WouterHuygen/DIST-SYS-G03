@@ -45,7 +45,7 @@ public class NodeUDPListener extends UDPListener {
                 && (hash > previousId           // either hash is between this node and previous node
                     || previousId > currentId)) // this node is start of circle and new node will become new start of circle
                 || hash > previousId && previousId > currentId; // this node is the start of the circle and new node is new end of circle
-        if (nextId == previousId && nextId != currentId) { // there were 2 nodes and a third node needs to be added
+        if (nextId == previousId && nextId != currentId) { // there were 2 nodes and a third node needs to be added previous settings of isNext/isPrevious are not valid
             if (hash > currentId) {
                 if (hash < nextId){                 // the new node is between the two existing nodes
                     isPrevious = true;
