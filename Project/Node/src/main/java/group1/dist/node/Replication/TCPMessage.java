@@ -7,6 +7,7 @@ import group1.dist.discovery.MessageType;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 
 public class TCPMessage {
@@ -63,4 +64,9 @@ public class TCPMessage {
         msg.setFilename(filename);
         sendMessage(msg);//"delete " + filename);
     }
+
+    public void sendShutdownMessage(String fromHost, String updateName,String updateIp){
+        sendMessage("shutdown " + fromHost + " IP " + updateIp + " NAME " + updateName);
+    }
+
 }

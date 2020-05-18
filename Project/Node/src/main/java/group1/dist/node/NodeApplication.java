@@ -37,7 +37,6 @@ public class NodeApplication {
         tcpThread.start();
     }
 
-
     @Bean
     public NodeInfo nodeInfo(){
         String ip = null;
@@ -110,6 +109,11 @@ public class NodeApplication {
         System.out.println("Starting shutdown procedure");
         try {
             discoveryService().shutdown(context.getBean(NodeInfo.class));
+
+            TCPMessage msg = new TCPMessage();
+            msg.startConnection(nodeInfo().getPreviousNode().getIp(), 5556);
+            msg.sendShutdownMessage(nodeInfo().getSelf().getName(), nodeInfo().getNextNode().getIp(), nodeInfo().getNextNode().getName());
+
             replicationHandler().shutDown();
         }catch (IOException e){
             e.printStackTrace();

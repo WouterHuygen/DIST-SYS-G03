@@ -61,7 +61,6 @@ public class DiscoveryService {
         }catch (NullPointerException e){
             System.out.println("No previous or Next node found");
         }
-
     }
 
     private boolean receiveAck(){
