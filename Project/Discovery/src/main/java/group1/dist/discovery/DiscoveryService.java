@@ -11,7 +11,7 @@ public class DiscoveryService {
     public static final int MULTICAST_PORT = 3009;
     public static final String MULTICAST_GROUP_ADDRESS = "225.4.5.6";
     public static final int ACK_PORT = 3008;
-    public static final int MAX_MSG_LEN = 100;
+    public static final int MAX_MSG_LEN = 150;
 
     private NodeInfo nodeInfo;
 
