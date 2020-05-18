@@ -1,5 +1,6 @@
 package group1.dist.node.Replication;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FileLogObject {
@@ -10,7 +11,8 @@ public class FileLogObject {
 
 
     public FileLogObject(){
-
+        replicatedToNodes = new ArrayList<String>();
+        fileUpdates = new ArrayList<String>();
     }
 
     public String getName() {
@@ -33,7 +35,7 @@ public class FileLogObject {
         return replicatedToNodes;
     }
 
-    public void setReplicatedToNodes(String replicatedNode) {
+    public void addReplicatedToNode(String replicatedNode) {
         this.replicatedToNodes.add(replicatedNode);
     }
 
@@ -41,7 +43,7 @@ public class FileLogObject {
         return fileUpdates;
     }
 
-    public void setFileUpdates(String fileUpdate) {
+    public void addFileUpdate(String fileUpdate) {
         this.fileUpdates.add(fileUpdate);
     }
 }

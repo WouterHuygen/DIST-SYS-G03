@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class APICall {
+    //Class makes call to namingserver, namingserver will return IP the file has to be replicated to.
     public static String call(String filename){
         String IP = null;
         try{

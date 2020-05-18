@@ -4,6 +4,8 @@ import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class FileCheckThread implements Runnable {
 
@@ -11,7 +13,6 @@ public class FileCheckThread implements Runnable {
     private String path;
     private static ArrayList<File> oldFileList = new ArrayList<File>();
     private ApplicationContext context;
-    //TODO: context ? is dat oke als die gewoon hier ook meegegeven wordt ?
     public FileCheckThread(String _path, long _sleepDuration, ApplicationContext _context){
         sleepDuration = _sleepDuration;
         path = _path;
@@ -42,7 +43,6 @@ public class FileCheckThread implements Runnable {
                 }
 
                 Thread.sleep(sleepDuration);
-
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -50,10 +50,10 @@ public class FileCheckThread implements Runnable {
     }
 
     public static ArrayList<File> listLastModifiedFiles(File folder, long sleepDuration) throws Exception {
-
         ArrayList<File> newFileList = new ArrayList<File>();
         if(folder.listFiles() != null) {
-            for (File fileEntry : folder.listFiles())
+            for (File fileEntry : Objects.requireNonNull(folder.listFiles()))
+                //check if file was edited/added between executions of the code
                 if ((System.currentTimeMillis() - fileEntry.lastModified()) <= sleepDuration)
                     newFileList.add(fileEntry);
         }
@@ -66,12 +66,12 @@ public class FileCheckThread implements Runnable {
         ArrayList<File> newFileList = new ArrayList<File>();
         ArrayList<File> deletedFileList = new ArrayList<File>();
 
+        //Add all the files found in the directory to the array.
         if(folder.listFiles() != null) {
-            for (File fileEntry : folder.listFiles()){
-                newFileList.add(fileEntry);
-            }
+            newFileList.addAll(Arrays.asList(Objects.requireNonNull(folder.listFiles())));
         }
 
+        //Check which files are in the oldFileList but not in newFileList ==> these files were deleted.
         for(File fileEntry: oldFileList){
             if(!newFileList.contains(fileEntry))
                 deletedFileList.add(fileEntry);

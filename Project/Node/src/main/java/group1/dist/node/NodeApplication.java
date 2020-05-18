@@ -19,6 +19,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
+import java.util.Objects;
 
 @SpringBootApplication
 public class NodeApplication {
@@ -95,10 +96,11 @@ public class NodeApplication {
         File folder = new File("/home/pi/node/ownFiles");
         FileLogHandler logHandler = new FileLogHandler();
         if(folder.listFiles() != null) {
-            for (File fileEntry : folder.listFiles()){
+            for (File fileEntry : Objects.requireNonNull(folder.listFiles())){
+                //Create log file
                 String logPath = logHandler.createNewFileLog(fileEntry.getPath(), context.getBean(NodeInfo.class).getSelf().getIp());
+                //Replicate file ==> log file is automatically replicated when created
                 replicationHandler().replicateFile(fileEntry);
-                replicationHandler().replicateFile(new File(logPath));
             }
         }
     }
