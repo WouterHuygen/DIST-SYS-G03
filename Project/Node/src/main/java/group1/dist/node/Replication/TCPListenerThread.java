@@ -1,5 +1,9 @@
 package group1.dist.node.Replication;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import group1.dist.discovery.DiscoveryMessage;
+import group1.dist.discovery.MessageType;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -8,6 +12,11 @@ public class TCPListenerThread implements Runnable {
     private ServerSocket serverSocket;
     private Socket clientSocket;
     private BufferedReader in;
+    private ObjectMapper objectMapper;
+
+    public TCPListenerThread() {
+        objectMapper = new ObjectMapper();
+    }
 
     public void stop() {
         try {
@@ -27,11 +36,27 @@ public class TCPListenerThread implements Runnable {
                 serverSocket = new ServerSocket(5556);
                 clientSocket = serverSocket.accept();
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                String message = in.readLine();
-                String[] split_message = message.split(" ");
+                String data = in.readLine();
+                DiscoveryMessage message = objectMapper.readValue(data, DiscoveryMessage.class);
+                //String[] split_message = message.split(" ");
                 System.out.println("Incoming TCP message: " + message);
                 stop();
                 //TODO: verplaatsen naar een aparte klasse ? Messagehandler ?
+                switch (message.getType()) {
+                    case REPLICATION_UPDATE:
+                        FileTransferClient.clientRun(message.getIp(), message.getFilename());
+                        break;
+                    case REPLICATION_DELETE:
+                        File file = new File("/home/pi/node/replicatedFiles/" + message.getFilename());
+                        if(file.delete())
+                            System.out.println(file.getName() + " is deleted successfully.");
+                        else
+                            System.out.println("Failed to delete " + file.getName());
+                        break;
+                    default:
+                        break;
+                }
+                /*
                 if (split_message[0].equals("replication")) {
                     FileTransferClient.clientRun(split_message[1], split_message[2]);
                 } else if (split_message[0].equals("delete")){
@@ -41,6 +66,7 @@ public class TCPListenerThread implements Runnable {
                     else
                         System.out.println("Failed to delete " + file.getName());
                 }
+                 */
             } catch (Exception e){
                 e.printStackTrace();
             }

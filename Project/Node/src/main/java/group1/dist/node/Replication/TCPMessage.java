@@ -1,5 +1,9 @@
 package group1.dist.node.Replication;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import group1.dist.discovery.DiscoveryMessage;
+import group1.dist.discovery.MessageType;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -9,6 +13,11 @@ public class TCPMessage {
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
+    private ObjectMapper objectMapper;
+
+    public TCPMessage() {
+        objectMapper = new ObjectMapper();
+    }
 
     public void startConnection(String ip, int port) {
         try {
@@ -20,7 +29,7 @@ public class TCPMessage {
         }
     }
 
-    public String sendMessage(String msg) {
+    public String sendMessage(DiscoveryMessage msg) {
         try{
             out.println(msg);
             String resp = in.readLine();
@@ -42,10 +51,16 @@ public class TCPMessage {
     }
 
     void sendReplicationMessage(String IP, String filename){
-        sendMessage("replication " + IP + " " + filename);
+        DiscoveryMessage msg = new DiscoveryMessage(MessageType.REPLICATION_UPDATE);
+        msg.setIp(IP);
+        msg.setFilename(filename);
+        sendMessage(msg);//"replication " + IP + " " + filename);
+
     }
 
     void sendDeleteMessage(String filename){
-        sendMessage("delete " + filename);
+        DiscoveryMessage msg = new DiscoveryMessage(MessageType.REPLICATION_DELETE);
+        msg.setFilename(filename);
+        sendMessage(msg);//"delete " + filename);
     }
 }

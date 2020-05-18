@@ -38,5 +38,5 @@ public abstract class UDPListener implements Runnable {
         }
     }
 
-    protected abstract void handleJoin(String nodeName, InetAddress ipAdderss);
+    protected abstract void handleJoin(String nodeName, InetAddress ipAddress);
 }
