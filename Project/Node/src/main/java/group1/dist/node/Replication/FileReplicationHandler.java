@@ -1,23 +1,22 @@
 package group1.dist.node.Replication;
 
-
 import group1.dist.model.NodeInfo;
-import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.util.Objects;
 
 public class FileReplicationHandler {
-    private ApplicationContext context;
-    private TCPMessage tcpMessage;
-    public FileReplicationHandler(ApplicationContext _context){
-        context = _context;
+    private final NodeInfo nodeInfo;
+    private final APICall apiCall;
+    private final TCPMessage tcpMessage;
+    public FileReplicationHandler(NodeInfo nodeInfo){
+        this.nodeInfo = nodeInfo;
+        apiCall = new APICall(nodeInfo);
         tcpMessage = new TCPMessage();
     }
 
     public void replicateFile(File file){
-        String ip = APICall.call(file.getName());
-        NodeInfo nodeInfo = context.getBean(NodeInfo.class);
+        String ip = apiCall.call(file.getName());
         if(ip != null){
             if(ip.equals(nodeInfo.getSelf().getIp())){
                 System.out.println("OWN IP");
@@ -40,9 +39,8 @@ public class FileReplicationHandler {
     }
 
     public void deleteFile(File file){
-        String ip = APICall.call(file.getName());
+        String ip = apiCall.call(file.getName());
 
-        NodeInfo nodeInfo = context.getBean(NodeInfo.class);
         if(ip != null){
             if(ip.equals(nodeInfo.getSelf().getIp())){
                 System.out.println("OWN IP");

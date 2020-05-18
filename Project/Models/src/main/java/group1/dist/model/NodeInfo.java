@@ -4,6 +4,7 @@ public class NodeInfo {
     private Node self;
     private Node previousNode;
     private Node nextNode;
+    private String namingIp;
 
     public NodeInfo(Node self) {
         this.self = self;
@@ -37,5 +38,13 @@ public class NodeInfo {
 
     public void setNextNode(Node nextNode) {
         this.nextNode = nextNode;
+    }
+
+    public String getNamingIp() {
+        return namingIp;
+    }
+
+    public void setNamingIp(String namingIp) {
+        this.namingIp = namingIp;
     }
 }

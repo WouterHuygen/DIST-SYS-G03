@@ -4,6 +4,7 @@ import group1.dist.discovery.DiscoveryMessage;
 import group1.dist.discovery.MessageType;
 import group1.dist.discovery.UDPListener;
 import group1.dist.model.Node;
+import group1.dist.model.NodeInfo;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -15,15 +16,18 @@ import static group1.dist.discovery.DiscoveryService.*;
 
 public class NamingUDPListener extends UDPListener {
     private MapManager mapManager;
+    private NodeInfo nodeInfo;
 
-    public NamingUDPListener(MapManager mapManager) {
+    public NamingUDPListener(MapManager mapManager, NodeInfo nodeInfo) {
         this.mapManager = mapManager;
+        this.nodeInfo = nodeInfo;
     }
 
     protected void handleJoin(String nodeName, InetAddress ipAddress) {
         int existingNodes = mapManager.getMap().size();
         DiscoveryMessage response = new DiscoveryMessage(MessageType.NAMING_RESPONSE);
         response.setExistingNodes(existingNodes);
+        response.setIp(nodeInfo.getSelf().getIp());
         Node newNode = new Node(nodeName, ipAddress.getHostAddress());
         if (mapManager.addNode(newNode)) {
             System.out.println("Added node: " + newNode);

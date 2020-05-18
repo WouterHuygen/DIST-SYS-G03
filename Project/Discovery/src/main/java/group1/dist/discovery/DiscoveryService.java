@@ -43,7 +43,8 @@ public class DiscoveryService {
 
     public void shutdown(NodeInfo nodeInfo) throws IOException {
         System.out.println("Removing " + nodeInfo.getSelf().getName() + "from nameserver mapping");
-        URL url = new URL("http://10.0.3.13:8080/nodes?name=" + nodeInfo.getSelf().getName());
+        URL url = new URL("http://" + nodeInfo.getNamingIp() + ":8080/nodes?name=" + nodeInfo.getSelf().getName());
+        System.out.println(url);
         HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
         httpCon.setRequestMethod("DELETE");
         httpCon.connect();
@@ -91,10 +92,12 @@ public class DiscoveryService {
                             System.out.println("Response from naming");
                             if (message.getExistingNodes() == 0) {
                                 nodeInfo.setNextNode(nodeInfo.getSelf());
-                                System.out.println(nodeInfo.getNextNode());
+                                System.out.println("Next: " + nodeInfo.getNextNode());
                                 nodeInfo.setPreviousNode(nodeInfo.getSelf());
-                                System.out.println(nodeInfo.getPreviousNode());
+                                System.out.println("Previous: " + nodeInfo.getPreviousNode());
                             }
+                            nodeInfo.setNamingIp(message.getIp());
+                            System.out.println("Naming: " + nodeInfo.getNamingIp());
                             if (message.getNewHostname() != null) {
                                 //TODO: shutdown
                                 System.out.println("shutting down for restart with: " + message.getNewHostname());
