@@ -9,6 +9,7 @@ public class DiscoveryMessage {
     private String ip;
     private int existingNodes;
     private String newHostname;
+    private String filename;
 
     public DiscoveryMessage() {
     }
@@ -57,9 +58,17 @@ public class DiscoveryMessage {
         this.newHostname = newHostname;
     }
 
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
     @Override
     public String toString() {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper(); //TODO: in this class??
         try {
             return objectMapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {

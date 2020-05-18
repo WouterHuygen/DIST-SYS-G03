@@ -11,7 +11,7 @@ public class DiscoveryService {
     public static final int MULTICAST_PORT = 3009;
     public static final String MULTICAST_GROUP_ADDRESS = "225.4.5.6";
     public static final int ACK_PORT = 3008;
-    public static final int MAX_MSG_LEN = 100;
+    public static final int MAX_MSG_LEN = 150;
 
     private NodeInfo nodeInfo;
 
@@ -45,10 +45,14 @@ public class DiscoveryService {
         System.out.println("Removing " + nodeInfo.getSelf().getName() + "from nameserver mapping");
         URL url = new URL("http://" + nodeInfo.getNamingIp() + ":8080/nodes?name=" + nodeInfo.getSelf().getName());
         System.out.println(url);
-        HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-        httpCon.setRequestMethod("DELETE");
-        httpCon.connect();
-        System.out.println(httpCon.getResponseCode());
+        if (nodeInfo.getNamingIp() != null) {
+            HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+            httpCon.setRequestMethod("DELETE");
+            httpCon.connect();
+            System.out.println(httpCon.getResponseCode());
+        } else {
+            System.out.println("failed to remove from naming server, IP was null");
+        }
         try {
             Node previousNode = nodeInfo.getPreviousNode();
             Node nextNode = nodeInfo.getNextNode();

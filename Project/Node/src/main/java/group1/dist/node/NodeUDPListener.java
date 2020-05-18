@@ -76,6 +76,7 @@ public class NodeUDPListener extends UDPListener {
             }
         }
         if (isPrevious) {
+            // TODO: rereplictation
             nodeInfo.setNextNode(node);
             System.out.println(nodeInfo.getNextNode());
             sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.PREVIOUS_NODE);
