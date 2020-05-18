@@ -45,10 +45,14 @@ public class DiscoveryService {
         System.out.println("Removing " + nodeInfo.getSelf().getName() + "from nameserver mapping");
         URL url = new URL("http://" + nodeInfo.getNamingIp() + ":8080/nodes?name=" + nodeInfo.getSelf().getName());
         System.out.println(url);
-        HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-        httpCon.setRequestMethod("DELETE");
-        httpCon.connect();
-        System.out.println(httpCon.getResponseCode());
+        if (nodeInfo.getNamingIp() != null) {
+            HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+            httpCon.setRequestMethod("DELETE");
+            httpCon.connect();
+            System.out.println(httpCon.getResponseCode());
+        } else {
+            System.out.println("failed to remove from naming server, IP was null");
+        }
         try {
             Node previousNode = nodeInfo.getPreviousNode();
             Node nextNode = nodeInfo.getNextNode();
