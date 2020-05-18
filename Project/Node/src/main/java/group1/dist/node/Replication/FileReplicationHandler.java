@@ -3,6 +3,7 @@ package group1.dist.node.Replication;
 import group1.dist.model.NodeInfo;
 
 import java.io.File;
+import java.util.Objects;
 
 public class FileReplicationHandler {
     private final NodeInfo nodeInfo;
@@ -66,16 +67,26 @@ public class FileReplicationHandler {
     }
 
     public void shutDown(){
+        //Delete all own files from the network
         File folder = new File("/home/pi/node/ownFiles");
         if(folder.listFiles() != null) {
-            for (File fileEntry : folder.listFiles()){
+            for (File fileEntry : Objects.requireNonNull(folder.listFiles())){
                 deleteFile(fileEntry);
+                //Delete json log files
+                String[] split = fileEntry.getName().split("\\.");
+                if(split[1].equals("json"))
+                    if(fileEntry.delete())
+                        System.out.println("Successfully deleted: " + fileEntry.getName());
+                    else
+                        System.out.println("Failed to delete: " + fileEntry.getName());
+
             }
         }
 
+        //Replicate files, that were replicated to this node, to other nodes
         folder = new File("/home/pi/node/replicatedFiles");
         if(folder.listFiles() != null) {
-            for (File fileEntry : folder.listFiles()){
+            for (File fileEntry : Objects.requireNonNull(folder.listFiles())){
                 replicateFile(fileEntry);
             }
         }

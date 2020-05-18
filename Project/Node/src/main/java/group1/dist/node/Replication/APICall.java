@@ -18,6 +18,7 @@ public class APICall {
         this.nodeInfo = nodeInfo;
     }
 
+    //Class makes call to namingserver, namingserver will return IP the file has to be replicated to.
     public String call(String filename){
         String IP = null;
         try{
