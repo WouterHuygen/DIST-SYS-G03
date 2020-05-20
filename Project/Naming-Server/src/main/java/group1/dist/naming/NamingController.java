@@ -8,6 +8,7 @@ import java.util.HashMap;
 import group1.dist.model.Node;
 import group1.dist.model.StatusObject;
 
+@CrossOrigin
 @RestController
 public class NamingController {
 

@@ -3,6 +3,18 @@
     <h3>Team Dams GUI</h3>
   </div>
   <div class="card-body">
-    <button type="button" class="btn btn-primary">load nodes</button>
+    <button *ngIf="nodes.length==0" type="button" class="btn btn-primary" (click)="loadNodes()">load nodes</button>
+    <div *ngIf="nodes.length > 0" class="col-4">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="d-inline-flex">Nodes</h4><button class="btn btn-light float-right"><i class="fas fa-sync-alt"></i></button>
+        </div>
+        <div class="list-group">
+          <button *ngFor="let node of nodes" class="list-group-item list-group-item-action">
+            {{node.name}}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
