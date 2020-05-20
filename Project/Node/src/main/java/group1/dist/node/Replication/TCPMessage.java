@@ -3,6 +3,8 @@ package group1.dist.node.Replication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group1.dist.discovery.DiscoveryMessage;
 import group1.dist.discovery.MessageType;
+import group1.dist.model.NodeInfo;
+
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -65,8 +67,17 @@ public class TCPMessage {
         sendMessage(msg);//"delete " + filename);
     }
 
-    public void sendShutdownMessage(String fromHost, String updateName,String updateIp){
-        sendMessage("shutdown " + fromHost + " IP " + updateIp + " NAME " + updateName);
+    public void sendShutdownMessageToNextNode(NodeInfo nodeInfo){
+        DiscoveryMessage msg = new DiscoveryMessage(MessageType.PREVIOUS_NODE_UPDATE);
+        msg.setIp(nodeInfo.getPreviousNode().getIp());
+        msg.setName(nodeInfo.getPreviousNode().getName());
+        sendMessage(msg);
     }
 
+    public void sendShutdownMessageToPreviousNode(NodeInfo nodeInfo){
+        DiscoveryMessage msg = new DiscoveryMessage(MessageType.NEXT_NODE_UPDATE);
+        msg.setIp(nodeInfo.getNextNode().getIp());
+        msg.setName(nodeInfo.getNextNode().getName());
+        sendMessage(msg);
+    }
 }

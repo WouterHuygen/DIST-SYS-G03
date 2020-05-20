@@ -65,7 +65,6 @@ public class DiscoveryMessage {
     public void setFilename(String filename) {
         this.filename = filename;
     }
-
     @Override
     public String toString() {
         ObjectMapper objectMapper = new ObjectMapper(); //TODO: in this class??

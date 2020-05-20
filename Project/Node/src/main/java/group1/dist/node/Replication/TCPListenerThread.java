@@ -2,7 +2,9 @@ package group1.dist.node.Replication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group1.dist.discovery.DiscoveryMessage;
-import group1.dist.discovery.MessageType;
+import group1.dist.model.Node;
+import group1.dist.model.NodeInfo;
+
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -14,8 +16,10 @@ public class TCPListenerThread implements Runnable {
     private BufferedReader in;
     private ObjectMapper objectMapper;
 
-    public TCPListenerThread() {
+    private NodeInfo nodeInfo;
+    public TCPListenerThread(NodeInfo nodeInfo) {
         objectMapper = new ObjectMapper();
+        this.nodeInfo = nodeInfo;
     }
 
     public void stop() {
@@ -52,6 +56,16 @@ public class TCPListenerThread implements Runnable {
                             System.out.println(file.getName() + " is deleted successfully.");
                         else
                             System.out.println("Failed to delete " + file.getName());
+                        break;
+                    case NEXT_NODE_UPDATE:
+                        Node newNextNode = new Node(message.getName(), message.getIp());
+                        nodeInfo.setNextNode(newNextNode);
+                        System.out.println("new next node set to: Name:" + nodeInfo.getNextNode().getName() + " IP: " + nodeInfo.getNextNode().getIp());
+                        break;
+                    case PREVIOUS_NODE_UPDATE:
+                        Node newPreviousNode = new Node(message.getName(), message.getIp());
+                        nodeInfo.setPreviousNode(newPreviousNode);
+                        System.out.println("new previous node set to: Name:" + nodeInfo.getPreviousNode().getName() + " IP: " + nodeInfo.getPreviousNode().getIp());
                         break;
                     default:
                         break;
