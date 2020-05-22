@@ -63,8 +63,10 @@ public class APICall {
 
                 // print result
                 System.out.println(response.toString());
+                con.disconnect();
             } else {
                 System.out.println("GET request failed");
+                con.disconnect();
             }
         } catch(Exception e){
             e.printStackTrace();

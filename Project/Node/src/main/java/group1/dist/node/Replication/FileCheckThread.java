@@ -4,6 +4,8 @@ import group1.dist.model.NodeInfo;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -14,11 +16,14 @@ public class FileCheckThread implements Runnable {
     private String path;
     private static ArrayList<File> oldFileList = new ArrayList<File>();
     private NodeInfo nodeInfo;
+    private FileLogHandler fileLogHandler;
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
     public FileCheckThread(String _path, long _sleepDuration, NodeInfo nodeInfo){
         sleepDuration = _sleepDuration;
         path = _path;
         this.nodeInfo = nodeInfo;
+        this.fileLogHandler = new FileLogHandler();
     }
 
     @Override
@@ -51,19 +56,25 @@ public class FileCheckThread implements Runnable {
         }
     }
 
-    public static ArrayList<File> listLastModifiedFiles(File folder, long sleepDuration) throws Exception {
+    public ArrayList<File> listLastModifiedFiles(File folder, long sleepDuration) throws Exception {
         ArrayList<File> newFileList = new ArrayList<File>();
         if(folder.listFiles() != null) {
-            for (File fileEntry : Objects.requireNonNull(folder.listFiles()))
+            for (File fileEntry : Objects.requireNonNull(folder.listFiles())){
                 //check if file was edited/added between executions of the code
-                if ((System.currentTimeMillis() - fileEntry.lastModified()) <= sleepDuration)
+                if ((System.currentTimeMillis() - fileEntry.lastModified()) <= sleepDuration){
                     newFileList.add(fileEntry);
+                    /*if(fileEntry.getName().split("\\.")[1].equals("txt")){
+                        LocalDateTime now = LocalDateTime.now();
+                        this.fileLogHandler.updateFileLog(fileEntry.getPath(), fileEntry.getName(), dtf.format(now));
+                    }*/
+                }
+            }
         }
 
         return newFileList;
     }
 
-    private static ArrayList<File> listDeletedFiles(File folder) throws Exception {
+    private ArrayList<File> listDeletedFiles(File folder) throws Exception {
 
         ArrayList<File> newFileList = new ArrayList<File>();
         ArrayList<File> deletedFileList = new ArrayList<File>();

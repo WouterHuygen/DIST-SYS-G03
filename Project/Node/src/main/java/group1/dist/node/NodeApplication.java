@@ -98,7 +98,7 @@ public class NodeApplication {
         if(folder.listFiles() != null) {
             for (File fileEntry : Objects.requireNonNull(folder.listFiles())){
                 //Create log file
-                String logPath = logHandler.createNewFileLog(fileEntry.getPath(), context.getBean(NodeInfo.class).getSelf().getIp());
+                //String logPath = logHandler.createNewFileLog(fileEntry.getPath(), context.getBean(NodeInfo.class).getSelf().getIp());
                 //Replicate file ==> log file is automatically replicated when created
                 replicationHandler().replicateFile(fileEntry);
             }
