@@ -1,8 +1,10 @@
 package group1.dist.node.Replication;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import group1.dist.model.NodeInfo;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 public class FileReplicationHandler {
@@ -17,6 +19,9 @@ public class FileReplicationHandler {
 
     public void replicateFile(File file){
         String ip = apiCall.call(file.getName());
+
+
+
         if(ip != null){
             if(ip.equals(nodeInfo.getSelf().getIp())){
                 System.out.println("OWN IP");
@@ -27,6 +32,32 @@ public class FileReplicationHandler {
                     ip = "0";
                 }
             }
+            else{
+                //check whether file will replicate to original owner of file
+                String logPath;
+                FileLogObject log;
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                if(!file.getName().contains(".json")){
+                    String filePath = file.getPath();
+                    logPath = filePath.substring(0, filePath.lastIndexOf('.'));
+                    logPath = logPath+".json";
+                }
+                else{
+                    logPath = file.getPath();
+                }
+
+                try {
+                    log = objectMapper.readValue(new File(logPath), FileLogObject.class);
+                    if(ip.equals(log.getDownloadLocation())){
+                        if(nodeInfo.getPreviousNode() != null && nodeInfo.getPreviousNode() != nodeInfo.getSelf())
+                            ip = nodeInfo.getPreviousNode().getIp();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
             try{
                 if(!ip.equals("0")){
                     FileTransferServer fileTransferServer = new FileTransferServer();
