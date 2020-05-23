@@ -4,45 +4,63 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 
 
 public class FileTransferClient {
 
-    public static void clientRun(String ip, String fileName) throws Exception {
+    public static void clientRun(String ip, String fileName) {
         System.out.println("Client startup!");
+        String filePath = "";
 
         if(available(5000))
             System.out.println("port free");
         else
             System.out.println("fucked");
 
-        System.out.println("IP in filetransferclient: " + InetAddress.getByName(ip));
-        //Initialize socket
-        Socket socket = new Socket(InetAddress.getByName(ip), 5000);
-        byte[] contents = new byte[10000];
+        try {
+            //Initialize socket
+            Socket socket = null;
+            socket = new Socket(InetAddress.getByName(ip), 5000);
 
-        String filePath = "/home/pi/node/replicatedFiles/" + fileName;
-        //Initialize the FileOutputStream to the output file's full path.
-        FileOutputStream fos = new FileOutputStream(filePath);
-        BufferedOutputStream bos = new BufferedOutputStream(fos);
-        InputStream is = socket.getInputStream();
+            System.out.println("Client connected");
 
-        //No of bytes read in one read() call
-        int bytesRead = 0;
+            byte[] contents = new byte[10000];
 
-        while((bytesRead=is.read(contents))!=-1)
-            bos.write(contents, 0, bytesRead);
+            filePath = "/home/pi/node/replicatedFiles/" + fileName;
+            //Initialize the FileOutputStream to the output file's full path.
+            FileOutputStream fos = new FileOutputStream(filePath);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            InputStream is = socket.getInputStream();
 
-        bos.flush();
-        socket.close();
+            //No of bytes read in one read() call
+            int bytesRead = 0;
+
+            while((bytesRead=is.read(contents))!=-1)
+                bos.write(contents, 0, bytesRead);
+
+            bos.flush();
+            bos.close();
+            fos.close();
+            socket.close();
+
+            System.out.println("Client closed: " + socket.isClosed());
+            System.out.println("Client connected: " + socket.isConnected());
+
+        } catch (UnknownHostException u){
+            System.out.println(u);
+        } catch (IOException i){
+            System.out.println(i);
+        }
 
         //Update log file.
-        //FileLogHandler logHandler = new FileLogHandler();
-        //logHandler.updateFileLog(filePath);
+        FileLogHandler logHandler = new FileLogHandler();
+        try{
+            logHandler.updateReplicatedLog(filePath);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         System.out.println(fileName + " saved successfully!");
     }

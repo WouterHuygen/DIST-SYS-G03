@@ -63,10 +63,10 @@ public class FileCheckThread implements Runnable {
                 //check if file was edited/added between executions of the code
                 if ((System.currentTimeMillis() - fileEntry.lastModified()) <= sleepDuration){
                     newFileList.add(fileEntry);
-                    /*if(fileEntry.getName().split("\\.")[1].equals("txt")){
+                    if(!fileEntry.getName().split("\\.")[1].equals("json")){
                         LocalDateTime now = LocalDateTime.now();
                         this.fileLogHandler.updateFileLog(fileEntry.getPath(), fileEntry.getName(), dtf.format(now));
-                    }*/
+                    }
                 }
             }
         }

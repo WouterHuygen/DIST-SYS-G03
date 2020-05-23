@@ -22,14 +22,15 @@ public class TCPListenerThread implements Runnable {
     @Override
     public void run() {
         System.out.println("Started TCP Listener");
+
         while(true) {
             try{
                 serverSocket = new ServerSocket(5556);
                 clientSocket = serverSocket.accept();
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String message = in.readLine();
-                String[] split_message = message.split(" ");
                 System.out.println("Incoming TCP message: " + message);
+                String[] split_message = message.split(" ");
                 stop();
                 //TODO: verplaatsen naar een aparte klasse ? Messagehandler ?
                 if (split_message[0].equals("replication")) {

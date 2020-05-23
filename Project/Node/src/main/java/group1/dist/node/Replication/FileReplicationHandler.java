@@ -74,12 +74,12 @@ public class FileReplicationHandler {
                 deleteFile(fileEntry);
                 //Delete json log files
                 String[] split = fileEntry.getName().split("\\.");
-                if(split[1].equals("json"))
-                    if(fileEntry.delete())
+                if(split[1].equals("json")) {
+                    if (fileEntry.delete())
                         System.out.println("Successfully deleted: " + fileEntry.getName());
                     else
                         System.out.println("Failed to delete: " + fileEntry.getName());
-
+                }
             }
         }
 

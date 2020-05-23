@@ -13,11 +13,7 @@ public class FileTransferServer {
 
         //Initialize Sockets
         TCPMessage msg = new TCPMessage();
-        System.out.println("IP used for TCP: " + IP);
         msg.startConnection(IP, 5556);
-        msg.sendReplicationMessage(networkInterface.getInetAddresses().nextElement().getHostAddress(), file.getName());
-
-
         System.out.println("Server startup!");
 
         if(available(5000))
@@ -25,17 +21,14 @@ public class FileTransferServer {
         else
             System.out.println("server fucked");
 
-
         ServerSocket ssock = null;
-        try{
         ssock = new ServerSocket(5000);
-        ssock.setSoTimeout(1000);
+
+        msg.sendReplicationMessage(networkInterface.getInetAddresses().nextElement().getHostAddress(), file.getName());
+
         Socket socket = ssock.accept();
 
         System.out.println("Server socket connection accepted!");
-        System.out.println("IP given to serverRun: " + IP);
-        System.out.println("IP from connection: " + socket.getInetAddress().getHostAddress());
-
 
         if(IP.equals(socket.getInetAddress().getHostAddress())) {
             FileInputStream fis = new FileInputStream(file);
@@ -66,14 +59,13 @@ public class FileTransferServer {
 
             os.flush();
             //File transfer done. Close the socket connection!
+        } else {
+            System.out.println("Server IP komt niet overeen");
         }
             socket.close();
             ssock.close();
             msg.stopConnection();
             System.out.println("File sent succesfully!");
-        } else {
-            System.out.println("Server IP komt niet overeen");
-        }
     }
 
     public static boolean available(int port) {

@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 
 public class FileLogHandler {
@@ -51,12 +53,12 @@ public class FileLogHandler {
         writeFile(logObject, new File(logFilePath));
     }
 
-    public void updateReplicatedLog(String _filePath){
+    public void updateReplicatedLog(String _filePath) throws UnknownHostException {
         String[] filePathSplit = _filePath.split("\\.");
         String logFilePath = filePathSplit[0] + ".json";
 
         FileLogObject logObject = fileToLogObject(_filePath);
-        //logObject.addReplicatedToNode();
+        logObject.addReplicatedToNode("Replicated to: " + InetAddress.getLocalHost().getHostAddress());
         writeFile(logObject, new File(logFilePath));
     }
 
