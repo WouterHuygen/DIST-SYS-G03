@@ -73,4 +73,50 @@ public class APICall {
         }
         return IP;
     }
+
+    public String getPreviousNode() {
+        String previousNode = null;
+        try {
+            URL url = new URL("http://" + nodeInfo.getPreviousNode() + ":8080/info");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+
+            //Response
+            int responseCode = con.getResponseCode();
+            System.out.println("GET Response Code :: " + responseCode);
+            if (responseCode == HttpURLConnection.HTTP_OK) { // success
+                BufferedReader in = new BufferedReader(new InputStreamReader(
+                        con.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                //JSON parsing
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    StatusObject<NodeInfo> statusObject = mapper.readValue(response.toString(), new TypeReference<StatusObject<NodeInfo>>(){});
+
+                    if(statusObject.isSucces()){
+                        previousNode = statusObject.getBody().getPreviousNode().getIp();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                // print result
+                System.out.println(response.toString());
+                con.disconnect();
+            } else {
+                System.out.println("GET request failed");
+                con.disconnect();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return previousNode;
+    }
 }

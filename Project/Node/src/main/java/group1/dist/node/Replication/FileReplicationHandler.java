@@ -50,8 +50,16 @@ public class FileReplicationHandler {
                 try {
                     log = objectMapper.readValue(new File(logPath), FileLogObject.class);
                     if(ip.equals(log.getDownloadLocation())){
-                        if(nodeInfo.getPreviousNode() != null && nodeInfo.getPreviousNode() != nodeInfo.getSelf())
-                            ip = nodeInfo.getPreviousNode().getIp();
+                        if(nodeInfo.getPreviousNode() != null && nodeInfo.getPreviousNode() != nodeInfo.getSelf() && nodeInfo.getNextNode() != nodeInfo.getPreviousNode())
+                            //More than 2 node in network
+                            if(!nodeInfo.getPreviousNode().getIp().equals(log.getDownloadLocation())){
+                                //Previous isn't the same as original location
+                                ip = nodeInfo.getPreviousNode().getIp();
+                            }
+                            else{
+                                //Replicate to previous of previous
+                                ip = apiCall.getPreviousNode();
+                            }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
