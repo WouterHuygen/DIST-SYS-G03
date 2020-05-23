@@ -45,13 +45,11 @@ public class NodeApplication {
             NetworkInterface networkInterface = NetworkInterface.getByName("ethwe0");
             if(networkInterface != null)
                 ip = networkInterface.getInetAddresses().nextElement().getHostAddress();
-            else
-                ip = "0.0.0.0";
-        } catch (Exception s){
+       } catch (Exception s){
             System.out.println("Failed to obtain host ip address");
-            ip = "0.0.0.0";
             s.printStackTrace();
         }
+        if (ip == null || ip.equals("0.0.0.0")) ip = "127.0.0.1";
         if (args.containsOption("name")){
             String name = args.getOptionValues("name").get(0);
             System.out.println("Creating nodeInfo object with name: " + name);
