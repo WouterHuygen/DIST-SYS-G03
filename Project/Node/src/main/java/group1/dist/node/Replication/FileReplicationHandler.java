@@ -59,6 +59,7 @@ public class FileReplicationHandler {
                             else{
                                 //Replicate to previous of previous
                                 ip = apiCall.getPreviousNode();
+                                ip = ip.equals(log.getDownloadLocation()) ? ip : "0";
                             }
                     }
                 } catch (IOException e) {

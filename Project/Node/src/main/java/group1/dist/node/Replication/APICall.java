@@ -77,7 +77,7 @@ public class APICall {
     public String getPreviousNode() {
         String previousNode = null;
         try {
-            URL url = new URL("http://" + nodeInfo.getPreviousNode() + ":8080/info");
+            URL url = new URL("http://" + nodeInfo.getPreviousNode().getIp() + ":8080/info");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
 
