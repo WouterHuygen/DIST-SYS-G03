@@ -54,13 +54,14 @@ public class FileTransferClient {
         }
 
         //Update log file.
-        FileLogHandler logHandler = new FileLogHandler();
-        try{
-            logHandler.updateReplicatedLog(filePath);
-        } catch (Exception e){
-            e.printStackTrace();
+        if(fileName.split("\\.")[1].equals("json")){
+            FileLogHandler logHandler = new FileLogHandler();
+            try{
+                logHandler.updateReplicatedLog(filePath);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         }
-
 
         System.out.println(fileName + " saved successfully!");
     }
