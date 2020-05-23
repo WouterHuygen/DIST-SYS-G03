@@ -26,6 +26,7 @@ public class FileTransferServer {
         msg.sendReplicationMessage(networkInterface.getInetAddresses().nextElement().getHostAddress(), file.getName());
         msg.stopConnection();
 
+
         ServerSocket ssock = new ServerSocket(5000);
         Socket socket = ssock.accept();
 

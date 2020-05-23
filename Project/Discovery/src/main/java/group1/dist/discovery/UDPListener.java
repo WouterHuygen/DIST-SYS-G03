@@ -1,8 +1,6 @@
 package group1.dist.discovery;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group1.dist.model.NodeInfo;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -38,5 +36,5 @@ public abstract class UDPListener implements Runnable {
         }
     }
 
-    protected abstract void handleJoin(String nodeName, InetAddress ipAdderss);
+    protected abstract void handleJoin(String nodeName, InetAddress ipAddress);
 }

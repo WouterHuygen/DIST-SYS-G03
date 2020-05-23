@@ -22,6 +22,7 @@ public class NodeUDPListener extends UDPListener {
         this.nodeInfo = nodeInfo;
     }
 
+
     protected void handleJoin(String nodeName, InetAddress ipAddress) {
         System.out.println(ipAddress.getHostAddress());
         int hash = Node.calculateHash(nodeName);
@@ -76,6 +77,7 @@ public class NodeUDPListener extends UDPListener {
             }
         }
         if (isPrevious) {
+            // TODO: rereplictation
             nodeInfo.setNextNode(node);
             System.out.println(nodeInfo.getNextNode());
             sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.PREVIOUS_NODE);

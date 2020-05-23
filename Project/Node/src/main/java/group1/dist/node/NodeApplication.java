@@ -32,11 +32,8 @@ public class NodeApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(NodeApplication.class, args);
-        //thread to check incoming TCP messages
-        Thread tcpThread = new Thread(new TCPListenerThread());
-        tcpThread.start();
-    }
 
+    }
 
     @Bean
     public NodeInfo nodeInfo(){
@@ -64,6 +61,14 @@ public class NodeApplication {
             e.printStackTrace();
         }
         return new NodeInfo(new Node(standardName, ip));
+    }
+
+
+    @Bean
+    public void tcpMessage(){
+        //thread to check incoming TCP messages
+        Thread tcpThread = new Thread(new TCPListenerThread(context.getBean(NodeInfo.class)));
+        tcpThread.start();
     }
 
     @Bean
@@ -108,7 +113,18 @@ public class NodeApplication {
         System.out.println("Starting shutdown procedure");
         try {
             discoveryService().shutdown(context.getBean(NodeInfo.class));
+
+            TCPMessage msg = new TCPMessage();
+            msg.startConnection(nodeInfo().getNextNode().getIp(), 5556);
+            msg.sendShutdownMessageToNextNode(nodeInfo());
+            msg.stopConnection();
+
+            msg.startConnection(nodeInfo().getPreviousNode().getIp(), 5556);
+            msg.sendShutdownMessageToPreviousNode(nodeInfo());
+            msg.stopConnection();
+
             replicationHandler().shutDown();
+
         }catch (IOException e){
             e.printStackTrace();
         }
