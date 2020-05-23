@@ -10,3 +10,4 @@ call mvnw clean package
 cd ../Naming-Server
 call mvnw clean package
 cd ..
+pause
