@@ -90,4 +90,11 @@ public class FileLogHandler {
             return null;
         }
     }
+
+    public File getLogFile(String _filePath){
+        String[] split = _filePath.split("\\.");
+        String logFilePath = split[0] + ".json";
+
+        return new File(logFilePath);
+    }
 }

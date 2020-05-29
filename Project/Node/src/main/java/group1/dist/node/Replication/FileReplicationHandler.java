@@ -18,63 +18,52 @@ public class FileReplicationHandler {
     }
 
     public void replicateFile(File file){
-        String ip = apiCall.call(file.getName());
+        if(!file.getPath().endsWith(".json")) {
+            String ip = apiCall.call(file.getName());
+            FileLogHandler logHandler = new FileLogHandler();
+            if (ip != null) {
+                if (ip.equals(nodeInfo.getSelf().getIp())) {
+                    System.out.println("OWN IP");
+                    if (nodeInfo.getPreviousNode() != null && nodeInfo.getPreviousNode() != nodeInfo.getSelf())
+                        ip = nodeInfo.getPreviousNode().getIp();
+                    else {
+                        System.out.println("No previous node, no replication needed");
+                        ip = "0";
+                    }
+                } else {
+                    //check whether file will replicate to original owner of file
+                    FileLogObject logObject = logHandler.fileToLogObject(file.getPath());
 
-
-
-        if(ip != null){
-            if(ip.equals(nodeInfo.getSelf().getIp())){
-                System.out.println("OWN IP");
-                if(nodeInfo.getPreviousNode() != null && nodeInfo.getPreviousNode() != nodeInfo.getSelf())
-                    ip = nodeInfo.getPreviousNode().getIp();
-                else{
-                    System.out.println("No previous node, no replication needed");
-                    ip = "0";
-                }
-            }
-            else{
-                //check whether file will replicate to original owner of file
-                String logPath;
-                FileLogObject log;
-                ObjectMapper objectMapper = new ObjectMapper();
-
-                if(!file.getName().contains(".json")){
-                    String filePath = file.getPath();
-                    logPath = filePath.substring(0, filePath.lastIndexOf('.'));
-                    logPath = logPath+".json";
-                }
-                else{
-                    logPath = file.getPath();
-                }
-
-                try {
-                    log = objectMapper.readValue(new File(logPath), FileLogObject.class);
-                    if(ip.equals(log.getDownloadLocation())){
-                        if(nodeInfo.getPreviousNode() != null && nodeInfo.getPreviousNode() != nodeInfo.getSelf() && nodeInfo.getNextNode() != nodeInfo.getPreviousNode())
+                    if (ip.equals(logObject.getDownloadLocation())) {
+                        if (nodeInfo.getPreviousNode() != null && nodeInfo.getPreviousNode() != nodeInfo.getSelf() && nodeInfo.getNextNode() != nodeInfo.getPreviousNode()) {
                             //More than 2 node in network
-                            if(!nodeInfo.getPreviousNode().getIp().equals(log.getDownloadLocation())){
+                            if (!nodeInfo.getPreviousNode().getIp().equals(logObject.getDownloadLocation())) {
                                 //Previous isn't the same as original location
                                 ip = nodeInfo.getPreviousNode().getIp();
-                            }
-                            else{
+                            } else {
                                 //Replicate to previous of previous
                                 ip = apiCall.getPreviousNode();
-                                ip = ip.equals(log.getDownloadLocation()) ? ip : "0";
+                                ip = ip.equals(logObject.getDownloadLocation()) ? ip : "0";
                             }
+                        }
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+                //send file first
+                sendFile(file, ip);
+                //send logfile after file is sent
+                sendFile(logHandler.getLogFile(file.getPath()), ip);
             }
+        }
+    }
 
-            try{
-                if(!ip.equals("0")){
-                    FileTransferServer fileTransferServer = new FileTransferServer();
-                    fileTransferServer.serverRun(file, ip);
-                }
-            } catch(Exception e){
-                e.printStackTrace();
+    public void sendFile(File file, String ip){
+        try{
+            if(!ip.equals("0")){
+                FileTransferServer fileTransferServer = new FileTransferServer();
+                fileTransferServer.serverRun(file, ip);
             }
+        } catch(Exception e){
+            e.printStackTrace();
         }
     }
 
