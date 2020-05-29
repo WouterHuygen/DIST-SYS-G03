@@ -103,7 +103,7 @@ public class NodeApplication {
         if(folder.listFiles() != null) {
             for (File fileEntry : Objects.requireNonNull(folder.listFiles())){
                 //Create log file
-                String logPath = logHandler.createNewFileLog(fileEntry.getPath(), context.getBean(NodeInfo.class).getSelf().getIp());
+                logHandler.createNewFileLog(fileEntry.getPath(), context.getBean(NodeInfo.class).getSelf().getIp());
                 //Replicate file ==> log file is automatically replicated when created
                 replicationHandler().replicateFile(fileEntry);
             }
@@ -120,7 +120,11 @@ public class NodeApplication {
             msg.startConnection(nodeInfo().getNextNode().getIp(), 5556);
             msg.sendShutdownMessageToNextNode(nodeInfo());
             msg.stopConnection();
-
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             msg.startConnection(nodeInfo().getPreviousNode().getIp(), 5556);
             msg.sendShutdownMessageToPreviousNode(nodeInfo());
             msg.stopConnection();

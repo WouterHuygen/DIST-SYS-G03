@@ -1,13 +1,7 @@
 package group1.dist.node.Replication;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,20 +11,26 @@ public class FileTransferServer {
 
         NetworkInterface networkInterface = NetworkInterface.getByName("ethwe0");
 
-        System.out.println("Server startup!");
-
         //Initialize Sockets
         TCPMessage msg = new TCPMessage();
-        System.out.println("IP used for TCP: " + IP);
         msg.startConnection(IP, 5556);
+        System.out.println("Server startup!");
+
+        if(available(5000))
+            System.out.println("port free");
+        else
+            System.out.println("server fucked");
+
+        ServerSocket ssock = null;
+        ssock = new ServerSocket(5000);
+
         msg.sendReplicationMessage(networkInterface.getInetAddresses().nextElement().getHostAddress(), file.getName());
-        msg.stopConnection();
 
-
-        ServerSocket ssock = new ServerSocket(5000);
         Socket socket = ssock.accept();
 
-        if(IP.equals(socket.getInetAddress().getHostAddress())){
+        System.out.println("Server socket connection accepted!");
+
+        if(IP.equals(socket.getInetAddress().getHostAddress())) {
             FileInputStream fis = new FileInputStream(file);
             BufferedInputStream bis = new BufferedInputStream(fis);
 
@@ -43,27 +43,56 @@ public class FileTransferServer {
             long current = 0;
 
             long start = System.nanoTime();
-            while(current!=fileLength){
+            while (current != fileLength) {
                 int size = 10000;
-                if(fileLength - current >= size)
+                if (fileLength - current >= size)
                     current += size;
-                else{
-                    size = (int)(fileLength - current);
+                else {
+                    size = (int) (fileLength - current);
                     current = fileLength;
                 }
                 contents = new byte[size];
                 bis.read(contents, 0, size);
                 os.write(contents);
-                System.out.print("Sending file ... "+(current*100)/fileLength+"% complete!");
+                System.out.print("Sending file ... " + (current * 100) / fileLength + "% complete!");
             }
 
             os.flush();
             //File transfer done. Close the socket connection!
+        } else {
+            System.out.println("Server IP komt niet overeen");
+        }
             socket.close();
             ssock.close();
+            msg.stopConnection();
             System.out.println("File sent succesfully!");
+    }
+
+    public static boolean available(int port) {
+
+        ServerSocket ss = null;
+        DatagramSocket ds = null;
+        try {
+            ss = new ServerSocket(port);
+            ss.setReuseAddress(true);
+            ds = new DatagramSocket(port);
+            ds.setReuseAddress(true);
+            return true;
+        } catch (IOException e) {
+        } finally {
+            if (ds != null) {
+                ds.close();
+            }
+
+            if (ss != null) {
+                try {
+                    ss.close();
+                } catch (IOException e) {
+                    /* should not be thrown */
+                }
+            }
         }
 
-
+        return false;
     }
 }

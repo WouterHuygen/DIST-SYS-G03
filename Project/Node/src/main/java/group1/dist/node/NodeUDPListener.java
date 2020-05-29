@@ -5,21 +5,28 @@ import group1.dist.discovery.MessageType;
 import group1.dist.discovery.UDPListener;
 import group1.dist.model.Node;
 import group1.dist.model.NodeInfo;
+import group1.dist.node.Replication.APICall;
+import group1.dist.node.Replication.FileReplicationHandler;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import static group1.dist.discovery.DiscoveryService.ACK_PORT;
 
 public class NodeUDPListener extends UDPListener {
 
     private NodeInfo nodeInfo;
-
+    private FileReplicationHandler fileReplicationHandler;
+    private APICall apiCall;
     public NodeUDPListener(NodeInfo nodeInfo) {
         this.nodeInfo = nodeInfo;
+        fileReplicationHandler = new FileReplicationHandler(this.nodeInfo);
+        apiCall = new APICall(this.nodeInfo);
     }
 
 
@@ -76,17 +83,39 @@ public class NodeUDPListener extends UDPListener {
                 }
             }
         }
-        if (isPrevious) {
-            // TODO: rereplictation
-            nodeInfo.setNextNode(node);
-            System.out.println(nodeInfo.getNextNode());
-            sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.PREVIOUS_NODE);
-        }
         if (isNext) {
             nodeInfo.setPreviousNode(node);
             System.out.println(nodeInfo.getPreviousNode());
             sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.NEXT_NODE);
+            //rereplicate files because it crashes when there are only 3 nodes?
+            //rereplicateFiles();
         }
+        if (isPrevious) {
+            nodeInfo.setNextNode(node);
+            System.out.println(nodeInfo.getNextNode());
+            sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.PREVIOUS_NODE);
+
+
+            //Replicate own files if you were the only node in the system
+            File ownFolder = new File("/home/pi/node/ownFiles");
+            if(ownFolder.listFiles()  != null){
+                String next = nodeInfo.getNextNode().getIp();
+                String previous = nodeInfo.getPreviousNode().getIp();
+                System.out.println("Own next " + next);
+                System.out.println("Own previous " + previous);
+                //Next and previous are the same node but are not your own IP
+                if(next.equals(previous) && !next.equals(nodeInfo.getSelf().getIp())){
+                    System.out.println("Replicate own files");
+                    for (File fileEntry : Objects.requireNonNull(ownFolder.listFiles())){
+                        fileReplicationHandler.replicateFile(fileEntry);
+                    }
+                }
+            }
+
+            // Rereplicate files if needed
+            rereplicateFiles();
+        }
+
         System.out.println("self: " + nodeInfo.getSelf());
         System.out.println("next: " + nodeInfo.getNextNode());
         System.out.println("previous: " + nodeInfo.getPreviousNode());
@@ -105,6 +134,32 @@ public class NodeUDPListener extends UDPListener {
         } catch (IOException e){
             System.out.println("Unicast socket failed\nFailed to send ack");
             e.printStackTrace();
+        }
+    }
+
+    private void rereplicateFiles(){
+        File folder = new File("/home/pi/node/replicatedFiles");
+        if(folder.listFiles()  != null){
+            System.out.println("Replicated files not empty");
+            for (File fileEntry : Objects.requireNonNull(folder.listFiles())){
+
+                String goToIp = apiCall.call(fileEntry.getName());
+                System.out.println("Apicall IP " + goToIp);
+                System.out.println("self: " + nodeInfo.getSelf().getIp());
+
+                if(!goToIp.equals(nodeInfo.getSelf().getIp())){
+                    fileReplicationHandler.replicateFile(fileEntry);
+                    if(!fileEntry.getPath().endsWith(".json")){
+                        if(fileEntry.delete()){
+                            System.out.println("Deleted after replication");
+                        }
+                        else{
+                            System.out.println("File not deleted after replication");
+                        }
+                    }
+
+                }
+            }
         }
     }
 }

@@ -35,14 +35,15 @@ public class TCPListenerThread implements Runnable {
     @Override
     public void run() {
         System.out.println("Started TCP Listener");
+
         while(true) {
             try{
                 serverSocket = new ServerSocket(5556);
                 clientSocket = serverSocket.accept();
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
                 String data = in.readLine();
                 DiscoveryMessage message = objectMapper.readValue(data, DiscoveryMessage.class);
-                System.out.println("Incoming TCP message: " + message);
                 stop();
                 //TODO: verplaatsen naar een aparte klasse ? Messagehandler ?
                 switch (message.getType()) {
