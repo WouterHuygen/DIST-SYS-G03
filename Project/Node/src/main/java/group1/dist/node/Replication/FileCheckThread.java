@@ -65,7 +65,11 @@ public class FileCheckThread implements Runnable {
                     newFileList.add(fileEntry);
                     if(!fileEntry.getName().split("\\.")[1].equals("json")){
                         LocalDateTime now = LocalDateTime.now();
+                        if(!fileLogHandler.logFileExists(fileEntry.getPath())) {
+                            fileLogHandler.createNewFileLog(fileEntry.getPath(), nodeInfo.getSelf().getIp());
+                        }
                         this.fileLogHandler.updateFileLog(fileEntry.getPath(), fileEntry.getName(), dtf.format(now));
+
                     }
                 }
             }

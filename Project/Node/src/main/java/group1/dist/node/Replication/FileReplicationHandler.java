@@ -23,35 +23,57 @@ public class FileReplicationHandler {
             FileLogHandler logHandler = new FileLogHandler();
             if (ip != null) {
                 if (ip.equals(nodeInfo.getSelf().getIp())) {
-                    System.out.println("OWN IP");
-                    if (nodeInfo.getPreviousNode() != null && nodeInfo.getPreviousNode() != nodeInfo.getSelf())
+                    if (nodeInfo.getPreviousNode() != null && !nodeInfo.getPreviousNode().getIp().equals(nodeInfo.getSelf().getIp()))
                         ip = nodeInfo.getPreviousNode().getIp();
                     else {
-                        System.out.println("No previous node, no replication needed");
                         ip = "0";
                     }
                 } else {
                     //check whether file will replicate to original owner of file
                     FileLogObject logObject = logHandler.fileToLogObject(file.getPath());
-
+                    System.out.println("ip " + ip);
+                    System.out.println("Download " + logObject.getDownloadLocation());
                     if (ip.equals(logObject.getDownloadLocation())) {
-                        if (nodeInfo.getPreviousNode() != null && nodeInfo.getPreviousNode() != nodeInfo.getSelf() && nodeInfo.getNextNode() != nodeInfo.getPreviousNode()) {
-                            //More than 2 node in network
+                        System.out.println(nodeInfo.getPreviousNode().getIp());
+                        System.out.println(nodeInfo.getSelf().getIp());
+                        System.out.println(nodeInfo.getNextNode().getIp());
+                        if (nodeInfo.getPreviousNode() != null && !nodeInfo.getPreviousNode().getIp().equals(nodeInfo.getSelf().getIp()) && !nodeInfo.getNextNode().getIp().equals(nodeInfo.getPreviousNode().getIp())){
+                            //More than 2 nodes in network
                             if (!nodeInfo.getPreviousNode().getIp().equals(logObject.getDownloadLocation())) {
                                 //Previous isn't the same as original location
                                 ip = nodeInfo.getPreviousNode().getIp();
                             } else {
                                 //Replicate to previous of previous
                                 ip = apiCall.getPreviousNode();
-                                ip = ip.equals(logObject.getDownloadLocation()) ? ip : "0";
+                                System.out.println("ELSE IP: " + ip);
+                                ip = !ip.equals(logObject.getDownloadLocation()) ? ip : "0";
                             }
+                        }
+                        else{
+                            //Exactly 2 nodes in the network
+                            ip = "0";
                         }
                     }
                 }
                 //send file first
+                System.out.println("IP 0?? " + ip);
                 sendFile(file, ip);
+                try {
+                    //Wait for first file to be sent and socket to be closed
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 //send logfile after file is sent
                 sendFile(logHandler.getLogFile(file.getPath()), ip);
+
+                try {
+                    //Wait for first file to be sent and socket to be closed
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
             }
         }
     }

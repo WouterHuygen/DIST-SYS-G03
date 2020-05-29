@@ -118,7 +118,11 @@ public class NodeApplication {
             msg.startConnection(nodeInfo().getNextNode().getIp(), 5556);
             msg.sendShutdownMessageToNextNode(nodeInfo());
             msg.stopConnection();
-
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             msg.startConnection(nodeInfo().getPreviousNode().getIp(), 5556);
             msg.sendShutdownMessageToPreviousNode(nodeInfo());
             msg.stopConnection();

@@ -87,6 +87,8 @@ public class NodeUDPListener extends UDPListener {
             nodeInfo.setPreviousNode(node);
             System.out.println(nodeInfo.getPreviousNode());
             sendAck(nodeInfo.getSelf().getName(), ipAddress, MessageType.NEXT_NODE);
+            //rereplicate files because it crashes when there are only 3 nodes?
+            //rereplicateFiles();
         }
         if (isPrevious) {
             nodeInfo.setNextNode(node);
@@ -111,26 +113,7 @@ public class NodeUDPListener extends UDPListener {
             }
 
             // Rereplicate files if needed
-            File folder = new File("/home/pi/node/replicatedFiles");
-            if(folder.listFiles()  != null){
-                System.out.println("Replicated files not empty");
-                for (File fileEntry : Objects.requireNonNull(folder.listFiles())){
-
-                    String goToIp = apiCall.call(fileEntry.getName());
-                    System.out.println("Apicall IP " + goToIp);
-                    System.out.println("self: " + nodeInfo.getSelf().getIp());
-
-                    if(!goToIp.equals(nodeInfo.getSelf().getIp())){
-                        fileReplicationHandler.replicateFile(fileEntry);
-                        if(fileEntry.delete()){
-                            System.out.println("Deleted after replication");
-                        }
-                        else{
-                            System.out.println("File not deleted after replication");
-                        }
-                    }
-                }
-            }
+            rereplicateFiles();
         }
 
         System.out.println("self: " + nodeInfo.getSelf());
@@ -151,6 +134,32 @@ public class NodeUDPListener extends UDPListener {
         } catch (IOException e){
             System.out.println("Unicast socket failed\nFailed to send ack");
             e.printStackTrace();
+        }
+    }
+
+    private void rereplicateFiles(){
+        File folder = new File("/home/pi/node/replicatedFiles");
+        if(folder.listFiles()  != null){
+            System.out.println("Replicated files not empty");
+            for (File fileEntry : Objects.requireNonNull(folder.listFiles())){
+
+                String goToIp = apiCall.call(fileEntry.getName());
+                System.out.println("Apicall IP " + goToIp);
+                System.out.println("self: " + nodeInfo.getSelf().getIp());
+
+                if(!goToIp.equals(nodeInfo.getSelf().getIp())){
+                    fileReplicationHandler.replicateFile(fileEntry);
+                    if(!fileEntry.getPath().endsWith(".json")){
+                        if(fileEntry.delete()){
+                            System.out.println("Deleted after replication");
+                        }
+                        else{
+                            System.out.println("File not deleted after replication");
+                        }
+                    }
+
+                }
+            }
         }
     }
 }

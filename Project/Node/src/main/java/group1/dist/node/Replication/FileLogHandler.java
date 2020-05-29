@@ -97,4 +97,11 @@ public class FileLogHandler {
 
         return new File(logFilePath);
     }
+
+    public boolean logFileExists(String _filePath){
+        String[] split = _filePath.split("\\.");
+        String logFilePath = split[0] + ".json";
+
+        return new File(logFilePath).exists();
+    }
 }
