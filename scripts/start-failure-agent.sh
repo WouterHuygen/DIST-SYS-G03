@@ -1,0 +1,1 @@
+java jade.Boot -container FailureAgent:ds.failure.FailureAgent
