@@ -6,10 +6,13 @@ import { AppComponent } from './app.component';
 
 import { NamingService } from './services/naming.service';
 import { HttpClientModule } from '@angular/common/http';
+import { NodeService } from './services/node.service';
+import { NodeComponent } from './node.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    NodeComponent
   ],
   imports: [
     BrowserModule,
@@ -18,7 +21,8 @@ import { HttpClientModule } from '@angular/common/http';
   ],
   schemas: [ NO_ERRORS_SCHEMA ],
   providers: [
-    NamingService
+    NamingService,
+    NodeService
   ],
   bootstrap: [AppComponent]
 })

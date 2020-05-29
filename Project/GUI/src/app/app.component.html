@@ -5,14 +5,14 @@
   <div class="card-body">
     <div *ngIf="nodes.length==0">
         <button type="button" class="btn btn-primary waves-light" (click)="loadNodes()">load nodes</button>
-        <div *ngIf="loading">
+        <div *ngIf="loadingNodes">
             <div class="spinner-border mt-2" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         </div>
     </div>
 
-    <div class="alert alert-warning d-inline-flex mt-2" role="alert" *ngIf="fetchingError">
+    <div class="alert alert-warning d-inline-flex mt-2" role="alert" *ngIf="namingFetchingError">
         Could not contact the naming server
     </div>
     <div class="row" *ngIf="nodes.length > 0">
@@ -23,21 +23,14 @@
               <button class="btn btn-light waves-light float-right" (click)="loadNodes()"><i class="fas fa-sync-alt"></i></button>
             </div>
             <div class="list-group">
-              <button *ngFor="let node of nodes" class="list-group-item list-group-item-action">
+              <button *ngFor="let node of nodes" class="list-group-item list-group-item-action " (click)="showNode(node)">
                 {{node.name}}
               </button>
            </div>
         </div>
       </div>
       <div class="col-8">
-        <div class="card">
-          <div class="card-header">
-              <h4 class="d-inline-flex">Node details</h4>
-          </div>
-          <div class="card-body">
-
-          </div>
-        </div>
+        <app-node *ngIf="nodeService.selectedNode != null"></app-node>
       </div>
     </div>
   </div>

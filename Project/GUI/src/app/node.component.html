@@ -1,0 +1,80 @@
+<div *ngIf="nodeService.loadingNode">
+  <div class="spinner-border mt-2" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+<div class="card" *ngIf="nodeService.selectedNode != null">
+  <div class="card-header">
+    <h4 class="d-inline-flex">{{nodeService.selectedNode.name}} details</h4>
+    <button class="btn btn-light waves-light float-right" (click)="reload()"><i class="fas fa-sync-alt"></i></button>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-6">
+        <table class="table">
+          <tbody>
+            <tr>
+              <th scope="row">IP address</th>
+              <td></td>
+              <td>{{nodeService.selectedNode.ip}}</td>
+            </tr>
+            <tr>
+              <th scope="row">Hash</th>
+              <td></td>
+              <td>{{nodeService.selectedNode.id}}</td>
+            </tr>
+            <tr>
+              <th scope="row" rowspan="3">Previous node</th>
+              <td></td>
+              <td>{{nodeService.selectedNodeInfo.previousNode.name}}</td>
+            </tr>
+            <tr>
+              <td>IP address</td>
+              <td>{{nodeService.selectedNodeInfo.previousNode.ip}}</td>
+            </tr>
+            <tr>
+              <td>Hash</td>
+              <td>{{nodeService.selectedNodeInfo.previousNode.id}}</td>
+            </tr>
+            <tr>
+              <th scope="row" rowspan="3">Next node</th>
+              <td></td>
+              <td>{{nodeService.selectedNodeInfo.nextNode.name}}</td>
+            </tr>
+            <tr>
+              <td>IP address</td>
+              <td>{{nodeService.selectedNodeInfo.nextNode.ip}}</td>
+            </tr>
+            <tr>
+              <td>Hash</td>
+              <td>{{nodeService.selectedNodeInfo.nextNode.id}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-6">
+        <table class="table" *ngIf="nodeService.selectedNode.ownFiles?.length != 0 || nodeService.selectedNode.replicatedFiles?.length != 0">
+          <tr>
+            <th scope="row" [attr.rowspan]="nodeService.selectedNode.ownFiles?.length + 1">
+              Local files</th>
+            <td>{{nodeService.ownMessage}}</td>
+          </tr>
+          <tr *ngFor="let file of nodeService.selectedNode.ownFiles">
+            <td>{{file}}<button class="btn btn-primary waves-light float-right">Download</button></td>
+          </tr>
+          <tr>
+            <th scope="row" [attr.rowspan]="nodeService.selectedNode.replicatedFiles?.length + 1">
+              Replicated files</th>
+            <td>{{nodeService.replicateMessage}}</td>
+          </tr>
+          <tr *ngFor="let file of nodeService.selectedNode.replicatedFiles">
+            <td>{{file}}<button class="btn btn-primary waves-light float-right">Download</button></td>
+          </tr>
+        </table>
+        <div class="spinner-border mt-2" role="status" *ngIf="nodeService.loadingFiles">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

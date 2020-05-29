@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NamingService } from './services/naming.service';
 import { Node } from './model/node';
+import { NodeService } from './services/node.service';
 
 @Component({
   selector: 'app-root',
@@ -11,17 +12,17 @@ export class AppComponent implements OnInit{
   title = 'GUI';
   public nodes: Node[] = [];
   public nodesEmpty = false;
-  public fetchingError = false;
-  public loading = false;
+  public namingFetchingError = false;
+  public loadingNodes = false;
 
-  constructor(private namingService: NamingService) {}
+  constructor(private namingService: NamingService, public nodeService: NodeService) {}
 
   ngOnInit() {
     this.loadNodes();
   }
 
   loadNodes() {
-    this.loading = true;
+    this.loadingNodes = true;
     this.nodes = [];
     this.namingService.getMap().subscribe(result => {
       console.log(result);
@@ -29,13 +30,19 @@ export class AppComponent implements OnInit{
         for (const value of Object.values(result.body)) {
           this.nodes.push(value);
         }
-        this.fetchingError = false;
+        this.showNode(this.nodes[0]);
+        this.namingFetchingError = false;
       }
-      this.loading = false;
+      this.loadingNodes = false;
     },
     error => {
-      this.fetchingError = true;
-      this.loading = false;
+      this.namingFetchingError = true;
+      this.loadingNodes = false;
     });
+  }
+
+  showNode(node: Node) {
+    const port = '808' + node.name.substr(node.name.length - 1, node.name.length);
+    this.nodeService.selectNode(node.ip, port);
   }
 }
