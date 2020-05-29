@@ -95,12 +95,15 @@ public class NodeUDPListener extends UDPListener {
 
 
             //Replicate own files if you were the only node in the system
-            File ownFolder = new File("home/pi/node/ownFiles");
+            File ownFolder = new File("/home/pi/node/ownFiles");
             if(ownFolder.listFiles()  != null){
                 String next = nodeInfo.getNextNode().getIp();
                 String previous = nodeInfo.getPreviousNode().getIp();
+                System.out.println("Own next " + next);
+                System.out.println("Own previous " + previous);
                 //Next and previous are the same node but are not your own IP
                 if(next.equals(previous) && !next.equals(nodeInfo.getSelf().getIp())){
+                    System.out.println("Replicate own files");
                     for (File fileEntry : Objects.requireNonNull(ownFolder.listFiles())){
                         fileReplicationHandler.replicateFile(fileEntry);
                     }
@@ -110,8 +113,14 @@ public class NodeUDPListener extends UDPListener {
             // Rereplicate files if needed
             File folder = new File("/home/pi/node/replicatedFiles");
             if(folder.listFiles()  != null){
+                System.out.println("Replicated files not empty");
                 for (File fileEntry : Objects.requireNonNull(folder.listFiles())){
-                    if(!apiCall.call(fileEntry.getName()).equals(nodeInfo.getSelf().getIp())){
+
+                    String goToIp = apiCall.call(fileEntry.getName());
+                    System.out.println("Apicall IP " + goToIp);
+                    System.out.println("self: " + nodeInfo.getSelf().getIp());
+
+                    if(!goToIp.equals(nodeInfo.getSelf().getIp())){
                         fileReplicationHandler.replicateFile(fileEntry);
                         if(fileEntry.delete()){
                             System.out.println("Deleted after replication");
