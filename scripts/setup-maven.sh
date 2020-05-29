@@ -3,12 +3,6 @@ sudo apt update
 
 sudo apt upgrade
 
-sudo apt install default-jdk
- 
-sudo apt install wget
-
-sudo apt install zip
-
 cd /tmp && wget http://mirrors.koehn.com/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.zip
 
 unzip apache-maven-3.5.4-bin.zip
