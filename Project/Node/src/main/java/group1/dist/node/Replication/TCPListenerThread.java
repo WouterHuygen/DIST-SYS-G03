@@ -42,7 +42,6 @@ public class TCPListenerThread implements Runnable {
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String data = in.readLine();
                 DiscoveryMessage message = objectMapper.readValue(data, DiscoveryMessage.class);
-                //String[] split_message = message.split(" ");
                 System.out.println("Incoming TCP message: " + message);
                 stop();
                 //TODO: verplaatsen naar een aparte klasse ? Messagehandler ?
@@ -83,7 +82,15 @@ public class TCPListenerThread implements Runnable {
                  */
             } catch (Exception e){
                 e.printStackTrace();
+                stop();
+                break;
             }
         }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        stop();
     }
 }
