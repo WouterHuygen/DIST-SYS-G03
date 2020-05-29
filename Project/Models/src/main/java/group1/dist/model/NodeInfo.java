@@ -6,6 +6,8 @@ public class NodeInfo {
     private Node nextNode;
     private String namingIp;
 
+    public NodeInfo() {}
+
     public NodeInfo(Node self) {
         this.self = self;
     }

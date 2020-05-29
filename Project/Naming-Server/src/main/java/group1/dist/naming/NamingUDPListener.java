@@ -45,7 +45,7 @@ public class NamingUDPListener extends UDPListener {
             }
         }
         System.out.println("sending response: \"" + response + "\"");
-        try (DatagramSocket unicastSocket = new DatagramSocket(ACK_PORT)){
+        try (DatagramSocket unicastSocket = new DatagramSocket()){
             byte[] data = response.toString().getBytes(StandardCharsets.UTF_8);
             DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, ACK_PORT);
             unicastSocket.send(packet);

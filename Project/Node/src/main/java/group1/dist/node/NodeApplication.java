@@ -32,11 +32,8 @@ public class NodeApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(NodeApplication.class, args);
-        //thread to check incoming TCP messages
-        Thread tcpThread = new Thread(new TCPListenerThread());
-        tcpThread.start();
-    }
 
+    }
 
     @Bean
     public NodeInfo nodeInfo(){
@@ -45,13 +42,11 @@ public class NodeApplication {
             NetworkInterface networkInterface = NetworkInterface.getByName("ethwe0");
             if(networkInterface != null)
                 ip = networkInterface.getInetAddresses().nextElement().getHostAddress();
-            else
-                ip = "0.0.0.0";
-        } catch (Exception s){
+       } catch (Exception s){
             System.out.println("Failed to obtain host ip address");
-            ip = "0.0.0.0";
             s.printStackTrace();
         }
+        if (ip == null || ip.equals("0.0.0.0")) ip = "127.0.0.1";
         if (args.containsOption("name")){
             String name = args.getOptionValues("name").get(0);
             System.out.println("Creating nodeInfo object with name: " + name);
@@ -66,6 +61,14 @@ public class NodeApplication {
             e.printStackTrace();
         }
         return new NodeInfo(new Node(standardName, ip));
+    }
+
+
+    @Bean
+    public void tcpMessage(){
+        //thread to check incoming TCP messages
+        Thread tcpThread = new Thread(new TCPListenerThread(context.getBean(NodeInfo.class)));
+        tcpThread.start();
     }
 
     @Bean
@@ -98,7 +101,7 @@ public class NodeApplication {
         if(folder.listFiles() != null) {
             for (File fileEntry : Objects.requireNonNull(folder.listFiles())){
                 //Create log file
-                String logPath = logHandler.createNewFileLog(fileEntry.getPath(), context.getBean(NodeInfo.class).getSelf().getIp());
+                logHandler.createNewFileLog(fileEntry.getPath(), context.getBean(NodeInfo.class).getSelf().getIp());
                 //Replicate file ==> log file is automatically replicated when created
                 replicationHandler().replicateFile(fileEntry);
             }
@@ -110,7 +113,22 @@ public class NodeApplication {
         System.out.println("Starting shutdown procedure");
         try {
             discoveryService().shutdown(context.getBean(NodeInfo.class));
+
+            TCPMessage msg = new TCPMessage();
+            msg.startConnection(nodeInfo().getNextNode().getIp(), 5556);
+            msg.sendShutdownMessageToNextNode(nodeInfo());
+            msg.stopConnection();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            msg.startConnection(nodeInfo().getPreviousNode().getIp(), 5556);
+            msg.sendShutdownMessageToPreviousNode(nodeInfo());
+            msg.stopConnection();
+
             replicationHandler().shutDown();
+
         }catch (IOException e){
             e.printStackTrace();
         }

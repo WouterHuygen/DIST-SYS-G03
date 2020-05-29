@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Date;
 
 public class FileLogHandler {
     public FileLogHandler(){
@@ -41,14 +44,22 @@ public class FileLogHandler {
     }
 
     //Send path of original file, not the log file
-    public void updateFileLog(String _filePath){
+    public void updateFileLog(String _filePath, String fileName, String date){
+        String[] filePathSplit = _filePath.split("\\.");
+        String logFilePath = filePathSplit[0] + ".json";
+
         FileLogObject logObject = fileToLogObject(_filePath);
-        writeFile(logObject, new File(_filePath));
+        logObject.addFileUpdate(date + ": " + fileName + " is updated.");
+        writeFile(logObject, new File(logFilePath));
     }
 
-    public void updateReplicatedLog(String _filePath, String _update){
+    public void updateReplicatedLog(String _filePath) throws UnknownHostException {
+        String[] filePathSplit = _filePath.split("\\.");
+        String logFilePath = filePathSplit[0] + ".json";
+
         FileLogObject logObject = fileToLogObject(_filePath);
-        logObject.addReplicatedToNode(_update);
+        logObject.addReplicatedToNode("Replicated to: " + InetAddress.getLocalHost().getHostAddress());
+        writeFile(logObject, new File(logFilePath));
     }
 
     private void writeFile(FileLogObject logObject, File _file){
@@ -78,5 +89,19 @@ public class FileLogHandler {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public File getLogFile(String _filePath){
+        String[] split = _filePath.split("\\.");
+        String logFilePath = split[0] + ".json";
+
+        return new File(logFilePath);
+    }
+
+    public boolean logFileExists(String _filePath){
+        String[] split = _filePath.split("\\.");
+        String logFilePath = split[0] + ".json";
+
+        return new File(logFilePath).exists();
     }
 }

@@ -8,6 +8,7 @@ public class FileLogObject {
     private String downloadLocation;
     private List<String> replicatedToNodes;
     private List<String> fileUpdates;
+    private String logPath;
 
 
     public FileLogObject(){
@@ -46,4 +47,6 @@ public class FileLogObject {
     public void addFileUpdate(String fileUpdate) {
         this.fileUpdates.add(fileUpdate);
     }
+
+
 }
