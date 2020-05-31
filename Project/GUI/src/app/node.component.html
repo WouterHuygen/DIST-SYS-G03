@@ -3,10 +3,15 @@
     <span class="sr-only">Loading...</span>
   </div>
 </div>
-<div class="card" *ngIf="nodeService.selectedNode != null">
+<div class="alert alert-warning" *ngIf="nodeService.failedLoading">
+  failed to load node
+</div>
+<div class="card" *ngIf="nodeService.selectedNode != null && !nodeService.failedLoading">
   <div class="card-header">
     <h4 class="d-inline-flex">{{nodeService.selectedNode.name}} details</h4>
     <button class="btn btn-light waves-light float-right" (click)="reload()"><i class="fas fa-sync-alt"></i></button>
+    <button class="btn btn-light waves-light float-right" data-toggle="tooltip" data-placement="top"
+            title="Shutdown node" (click)="shutdown()"><i class="fas fa-power-off"></i></button>
   </div>
   <div class="card-body">
     <div class="row">

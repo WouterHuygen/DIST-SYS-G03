@@ -6,7 +6,7 @@ import { NodeInfo } from '../model/nodeInfo';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable()
-export class NodeService{
+export class NodeService {
   public selectedNode: Node;
   public selectedNodeInfo: NodeInfo;
   public loadingNode = false;
@@ -15,7 +15,7 @@ export class NodeService{
   public replicateMessage: string;
   public ownMessage: string;
 
-  constructor(private http: HttpClient){}
+  constructor(private http: HttpClient) { }
 
   public getNodeInfo(ip: string, port: string): Observable<StatusObject<NodeInfo>> {
     return this.http.get<StatusObject<NodeInfo>>(`http://${ip}:${port}/info`);
@@ -36,15 +36,24 @@ export class NodeService{
       if (result.succes) {
         this.selectedNode = result.body.self;
         this.selectedNodeInfo = result.body;
+        this.loadFiles(ip, port);
       }
       this.loadingNode = false;
     },
-    error => {
-      this.failedLoading = true;
-      this.loadingNode = false;
-    });
+      error => {
+        this.failedLoading = true;
+        this.loadingNode = false;
+        this.selectedNode = undefined;
+      });
+
+  }
+
+  public shutdownNode(ip: string, port: string): Observable<string> {
+    return this.http.get<string>(`http://${ip}:${port}/shutdown`);
+  }
+
+  private loadFiles(ip: string, port: string) {
     this.getReplicatedFiles(ip, port).subscribe(result => {
-      //todo failed?
       if (result.succes) {
         this.selectedNode.replicatedFiles = result.body;
         this.replicateMessage = '';
@@ -53,10 +62,10 @@ export class NodeService{
         this.replicateMessage = result.message;
       }
       this.loadingFiles = false;
-    });
+    },
+      error => this.selectedNodeInfo = undefined);
     this.loadingFiles = true;
     this.getOwnFiles(ip, port).subscribe(result => {
-      //todo failed?
       if (result.succes) {
         this.selectedNode.ownFiles = result.body;
         this.ownMessage = '';
@@ -65,6 +74,7 @@ export class NodeService{
         this.ownMessage = result.message;
       }
       this.loadingFiles = false;
-    });
+    },
+      error => this.selectedNodeInfo = undefined);
   }
 }
