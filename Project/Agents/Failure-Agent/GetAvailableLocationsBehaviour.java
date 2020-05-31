@@ -32,6 +32,8 @@ import jade.domain.JADEAgentManagement.*;
 import jade.domain.mobility.MobilityOntology;
 import jade.domain.FIPANames;
 
+import java.util.Vector;
+
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
 
@@ -41,21 +43,17 @@ import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;
 import jade.content.onto.basic.Result;
 
-  /*
-   * This behaviour extends SimpleAchieveREInitiator in order
-   * to request to the AMS the list of available locations where
-   * the agent can move.
-   * Then, it displays these locations into the GUI
-   * @author Fabio Bellifemine - CSELT S.p.A.
-   * @version $Date: 2003-02-25 13:29:42 +0100 (mar, 25 feb 2003) $ $Revision: 3687 $
-   */
+
 public class GetAvailableLocationsBehaviour extends SimpleAchieveREInitiator {
 
     private ACLMessage request;
+
+    private FailureAgent failureAgent;
  
    public GetAvailableLocationsBehaviour(FailureAgent a) {
      // call the constructor of FipaRequestInitiatorBehaviour
      super(a, new ACLMessage(ACLMessage.REQUEST));
+     failureAgent = a;
      request = (ACLMessage)getDataStore().get(REQUEST_KEY);
      // fills all parameters of the request ACLMessage
      request.clearAllReceiver();
@@ -97,18 +95,22 @@ public class GetAvailableLocationsBehaviour extends SimpleAchieveREInitiator {
 
    protected void handleInform(ACLMessage inform) {
      String content = inform.getContent();
-     System.out.println("Test" + inform.toString());
-     /*try {
+     System.out.println(inform.toString());
+     try {
        Result results = (Result)myAgent.getContentManager().extractContent(inform);
        // Prints available locations
-       for ( ; results.getItems().iterator().hasNext(); ) {
+       Iterator list = results.getItems().iterator();
+       for ( ; list.hasNext(); ) {
         Object obj = list.next();
-        System.out.println("Available location: "+(Location) obj.toString());
+        failureAgent.addLocation((Location) obj);
+        System.out.println("Available location at: "+(Location) obj);
       }
+      failureAgent.IsInformedByAMS = true;
+      failureAgent.moveAgentToNextNode();
      }
      catch(Exception e) {
        e.printStackTrace();
-     }*/
+     }
    }
 
 }
