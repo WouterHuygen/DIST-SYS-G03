@@ -24,7 +24,7 @@ public class MapManager {
         String key = Integer.toString(node.getId());
         if (map.containsKey(key)) return false;
         map.put(key, node);
-        return saveMap(); //TODO: enum for succes, key already exists, failed saving map?
+        return saveMap();
     }
 
     Node deleteNode(String nodeName){
@@ -48,7 +48,7 @@ public class MapManager {
         int highestKey = 0;
         int smallestDiffKey = 0;
         for (String key : keys) {
-            int keyHash = Integer.parseInt(key); //TODO: save names as keys and calculate hash here everytime?
+            int keyHash = Integer.parseInt(key);
             if (keyHash < hash && keyHash > smallestDiffKey)
                 smallestDiffKey = keyHash;
             if (keyHash > highestKey)
@@ -60,7 +60,7 @@ public class MapManager {
         return map.get(Integer.toString(smallestDiffKey));
     }
 
-    HashMap<String, Node> getMap() { //TODO: not read everytime, only on startup
+    HashMap<String, Node> getMap() {
         try {
             String jsonString = readFromFile();
             if (!jsonString.equals(""))

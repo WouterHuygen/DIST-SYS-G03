@@ -102,8 +102,8 @@ public class DiscoveryService {
                             nodeInfo.setNamingIp(message.getIp());
                             System.out.println("Naming: " + nodeInfo.getNamingIp());
                             if (message.getNewHostname() != null) {
-                                //TODO: shutdown
                                 System.out.println("shutting down for restart with: " + message.getNewHostname());
+                                //initShutdown(message.getNewHostname());
                             }
                             System.out.println("Received ACK");
                             success = true;
@@ -124,5 +124,16 @@ public class DiscoveryService {
             se.printStackTrace();
         }
         return success;
+    }
+
+    public void initShutdown(String newName) {
+        try {
+            URL url = new URL("http://"+ nodeInfo.getSelf().getIp()+":8080/restart?name="+newName);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.connect();
+        } catch (IOException e) {
+            System.out.println("failed restart with name: "+newName);
+            e.printStackTrace();
+        }
     }
 }

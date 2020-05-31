@@ -45,7 +45,6 @@ public class TCPListenerThread implements Runnable {
                 String data = in.readLine();
                 DiscoveryMessage message = objectMapper.readValue(data, DiscoveryMessage.class);
                 stop();
-                //TODO: verplaatsen naar een aparte klasse ? Messagehandler ?
                 switch (message.getType()) {
                     case REPLICATION_UPDATE:
                         FileTransferClient.clientRun(message.getIp(), message.getFilename());

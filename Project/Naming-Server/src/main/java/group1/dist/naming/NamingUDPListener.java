@@ -41,7 +41,7 @@ public class NamingUDPListener extends UDPListener {
                     newNode = new Node(nodeName, ipAddress.getHostAddress());
                 } while (!mapManager.addNode(newNode));
                 response.setNewHostname(nodeName);
-                System.out.println("Added node: " + nodeName); //TODO: node.toString()
+                System.out.println("Added node: " + nodeName);
             }
         }
         System.out.println("sending response: \"" + response + "\"");

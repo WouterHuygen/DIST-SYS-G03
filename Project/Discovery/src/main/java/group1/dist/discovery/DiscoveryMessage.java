@@ -67,7 +67,7 @@ public class DiscoveryMessage {
     }
     @Override
     public String toString() {
-        ObjectMapper objectMapper = new ObjectMapper(); //TODO: in this class??
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {

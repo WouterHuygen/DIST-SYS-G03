@@ -22,7 +22,7 @@ public class NamingController {
     public StatusObject<Node> ResolveNaming(@RequestParam(value = "filename") String filename)  {
         Node node = mapManager.findNodeIp(filename);
         StatusObject<Node> result = new StatusObject<>(node != null, "IP found", node);
-        return result; //TODO: map to JSON?
+        return result;
     }
 
     @GetMapping("/nodes")
@@ -32,7 +32,7 @@ public class NamingController {
     }
 
     @PostMapping("/nodes")
-    public StatusObject<Node> AddNode(@RequestParam(value = "name") String nodeName, @RequestParam(value = "ip") String ipAddress){ //TODO: maybe json body?
+    public StatusObject<Node> AddNode(@RequestParam(value = "name") String nodeName, @RequestParam(value = "ip") String ipAddress){
         Node node = new Node(nodeName, ipAddress);
         boolean result = mapManager.addNode(node);
         String status;

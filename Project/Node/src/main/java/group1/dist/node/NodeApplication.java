@@ -54,7 +54,7 @@ public class NodeApplication {
             System.out.println("Creating nodeInfo object with name: " + name);
             return new NodeInfo(new Node(name, ip));
         }
-        String standardName; //TODO: standard node name
+        String standardName;
         try {
             standardName = InetAddress.getLocalHost().getHostName();
             System.out.println("Creating nodeInfo object with name: " + standardName);
