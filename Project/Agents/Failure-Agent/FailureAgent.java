@@ -43,12 +43,14 @@ public class FailureAgent extends Agent {
   Location nextSite;  // this variable holds the destination site
 
   // This vector contains all available locations
+  // It gets its locations from the AMS through the GetAvailableLocationsBehaviour
   Vector availableLocations = new Vector();
 
   // this vector contains the list of visited locations
   Vector visitedLocations = new Vector();
 
-  Bool OwnershipTransfered = false;
+  boolean OwnershipTransfered = false;
+  boolean IsInformedByAMS = false;
 
   public void setup() {
 	  // register the SL0 content language
@@ -62,12 +64,11 @@ public class FailureAgent extends Agent {
 	  ///////////////////////
 	  // Add agent behaviours to serve incoming messages
 	  Behaviour b2 = new ServeIncomingMessagesBehaviour(this);
-	  addBehaviour(b2);	
+    addBehaviour(b2);
 	}
 
 	public void takeDown() {
           System.out.println(getLocalName()+" is now shutting down.");
-          //doDelete();
 	}
  
   /**
@@ -88,6 +89,7 @@ public class FailureAgent extends Agent {
    */
    protected void afterMove() {
      System.out.println(getLocalName()+" is just arrived to this node.");
+     OwnershipTransfered = false;
      //if the migration is via RMA the variable nextSite can be null.
      if(nextSite != null)
      {
@@ -96,19 +98,13 @@ public class FailureAgent extends Agent {
 			
      // Register again SL0 content language and JADE mobility ontology,
      // since they don't migrate.
-     getContentManager().registerLanguage(new SLCodec(), FIPANames.ContentLanguage.FIPA_SL0);
-	 getContentManager().registerOntology(MobilityOntology.getInstance());
-     // get the list of available locations from the AMS.
-     // FIXME. This list might be stored in the Agent and migrates with it.
-     addBehaviour(new GetAvailableLocationsBehaviour(this));
+    getContentManager().registerLanguage(new SLCodec(), FIPANames.ContentLanguage.FIPA_SL0);
+	  getContentManager().registerOntology(MobilityOntology.getInstance());
 
      // Transfer the ownership of files from the old node to the new node
-     //transferOwnership();
+     transferOwnership();
 
-     if(OwnershipTransfered){
-      //moveAgent();
-     }
-
+     moveAgentToNextNode();
    }
 
 
@@ -133,27 +129,39 @@ public class FailureAgent extends Agent {
   }
 
   // Should be implemented with the replication part of the project
-  public void fetchOwnedFiles(){
-
+  private void fetchOwnedFiles(){
+    System.out.println(getLocalName()+" is now fetching files to transfer.");
+    //TimeUnit.SECONDS.sleep(1);
   }
 
   // Should be implemented with the replication part of the project
-  public void transferOwnership(){
-    TimeUnit.SECONDS.sleep(1);
+  private void transferOwnership(){
+    System.out.println(getLocalName()+" is now transfering ownership of the files.");
+    //TimeUnit.SECONDS.sleep(1);
     OwnershipTransfered = true;
   }
 
-  public void reloadAvailableLocations(){
+  private void reloadAvailableLocations(){
     addBehaviour(new GetAvailableLocationsBehaviour(this));
   }
 
-  public void moveAgent(Location dest){
-
-    nextSite = dest;
-    doMove(nextSite);
+  public void moveAgentToNextNode(){
+    if(!availableLocations.isEmpty() && IsInformedByAMS){
+      nextSite = (Location) availableLocations.firstElement();
+      availableLocations.remove(availableLocations.firstElement());
+      doMove(nextSite);
+    }
+    else if(availableLocations.isEmpty() && IsInformedByAMS){
+     System.out.println(getLocalName()+" visited all nodes on the network.");
+     doDelete();
+    }
+    else{
+      System.out.println(getLocalName()+" has no available nodes to transfer to.");
+    }
   }
 
-
-
+  public void addLocation(Location location){
+    availableLocations.add(location);
+  }
 }
 

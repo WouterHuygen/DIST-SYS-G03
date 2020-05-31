@@ -82,22 +82,6 @@ class ServeIncomingMessagesBehaviour extends SimpleBehaviour
 				replySentence = "\"OK exiting\"";
 				myAgent.doDelete();
 			}
-			// STOP COUNTING
-			else if (action.equals("stop"))
-			{
-				System.out.println("They requested me to stop counting");
-				((MobileAgent) myAgent).stopCounter();
-				// Set reply sentence
-				replySentence = "\"OK stopping\"";
-			} 				
-			// CONTINUE COUNTING
-			else if (action.equals("continue"))
-			{
-				System.out.println("They requested me to continue counting");
-				((MobileAgent) myAgent).continueCounter();
-				// Set reply sentence
-				replySentence = "\"OK continuing\"";
-			} 
 			// MOVE TO ANOTHER LOCATION				
 			else if (action.equals("move"))
 			{
@@ -108,21 +92,14 @@ class ServeIncomingMessagesBehaviour extends SimpleBehaviour
 				// Set reply sentence
 				replySentence = "\"OK moving to " + destination+" \"";
 				// Prepare to move
-				((MobileAgent)myAgent).nextSite = dest;
+				((FailureAgent)myAgent).nextSite = dest;
 				myAgent.doMove(dest);
 			}
 			// CLONE TO ANOTHER LOCATION				
 			else if (action.equals("clone"))
 			{
-			    String destination = st.nextToken();
-			    System.out.println();
-			    Location dest = new jade.core.ContainerID(destination, null);
-			    System.out.println("They requested me to clone myself to " + destination);
-				// Set reply sentence
-				replySentence = "\"OK cloning to " + destination+" \"";
-				// Prepare to move
-				((MobileAgent)myAgent).nextSite = dest;
-				myAgent.doClone(dest, "clone"+((MobileAgent)myAgent).cnt+"of"+myAgent.getName());
+			    System.out.println("This agent isn't allowed to clone itself");
+
 			}
 			// SAY THE CURRENT LOCATION 
 			else if (action.equals("where-are-you"))
