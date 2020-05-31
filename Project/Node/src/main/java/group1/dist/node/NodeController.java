@@ -81,10 +81,27 @@ public class NodeController {
 
         Thread end = new Thread(() -> {
             ((ConfigurableApplicationContext)context).close();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             context = SpringApplication.run(NodeApplication.class, strArgs);
         });
 
         end.setDaemon(false);
         end.start();
+    }
+
+    @GetMapping("/shutdown")
+    public StatusObject<Boolean> shutdown() {
+
+        Thread end = new Thread(() -> {
+            int exitCode = SpringApplication.exit(context, () -> 0);
+            System.exit(exitCode);
+        });
+
+        end.start();
+        return new StatusObject<Boolean>(true, "shutdown started", true);
     }
 }
